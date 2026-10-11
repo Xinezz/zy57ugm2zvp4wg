@@ -22,6 +22,12 @@
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December",
   ];
+  // Date ranges whose weekdays get their own calendar color (unless the day is busy or done).
+  const PERIODS = [
+    { start: "2026-10-05", end: "2027-02-19", className: "intern", label: "internship" },
+  ];
+  const periodFor = (key) => (isWeekendKey(key) ? null : PERIODS.find((p) => key >= p.start && key <= p.end) || null);
+
   const REPEAT_LABELS = { daily: "every day", weekdays: "weekdays", weekly: "weekly", monthly: "monthly" };
 
   const $ = (id) => document.getElementById(id);
@@ -107,7 +113,8 @@
       const cell = document.createElement("button");
       cell.type = "button";
       cell.dataset.key = key;
-      cell.className = `day-cell ${status || (isWeekendKey(key) ? "weekend" : "weekday")}`;
+      const period = periodFor(key);
+      cell.className = `day-cell ${status || (isWeekendKey(key) ? "weekend" : period ? period.className : "weekday")}`;
       if (key === today) cell.classList.add("today");
       if (key === selectedKey) cell.classList.add("selected");
 

@@ -148,6 +148,7 @@
 
 .swatch.weekend { background: var(--weekend); }
 .swatch.weekday { background: var(--weekday); }
+.swatch.intern  { background: var(--intern); }
 .swatch.busy    { background: var(--busy); }
 .swatch.done    { background: var(--done); }
 
@@ -297,6 +298,7 @@
 
 .day-cell.weekend { --cell-fill: var(--weekend); }
 .day-cell.weekday { --cell-fill: var(--weekday); }
+.day-cell.intern  { --cell-fill: var(--intern); }
 .day-cell.busy    { --cell-fill: var(--busy); }
 .day-cell.done    { --cell-fill: var(--done); }
 
