@@ -149,6 +149,46 @@
 .swatch.weekend { background: var(--weekend); }
 .swatch.weekday { background: var(--weekday); }
 .swatch.intern  { background: var(--intern); }
+
+/* internship countdown beside the legend */
+.period-countdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.period-countdown:empty {
+  display: none;
+}
+
+.period-pill {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 12px 7px;
+  overflow: hidden;
+  border: 2px solid var(--intern);
+  border-radius: 10px 4px 12px 4px;
+  background: color-mix(in srgb, var(--intern) 18%, #0a0a0a);
+  font-size: 0.95rem;
+}
+
+.period-pill strong {
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #ff8fd8;
+}
+
+.period-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: linear-gradient(to right, var(--intern) var(--done), transparent var(--done));
+}
 .swatch.busy    { background: var(--busy); }
 .swatch.done    { background: var(--done); }
 

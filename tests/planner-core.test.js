@@ -153,4 +153,21 @@ test("agenda lists open one-off tasks as overdue, never missed repeats", () => {
   assert.equal(result.upcoming[0].key, "2026-10-02");
 });
 
+test("special periods colour weekdays only and count weekdays left", () => {
+  const period = { start: "2026-10-05", end: "2026-10-16", className: "intern", label: "Internship" };
+  assert.equal(core.periodFor("2026-10-07", [period]), period);
+  assert.equal(core.periodFor("2026-10-10", [period]), null); // Saturday
+  assert.equal(core.periodFor("2026-10-19", [period]), null); // after the end
+  assert.equal(core.weekdaysBetween("2026-10-05", "2026-10-16"), 10);
+
+  const before = core.periodCountdown(period, "2026-10-01"); // Thursday
+  assert.equal(before.phase, "before");
+  assert.equal(before.untilStart, 2); // Thu and Fri
+  const during = core.periodCountdown(period, "2026-10-11"); // Sunday
+  assert.deepEqual([during.phase, during.left, during.done, during.total], ["during", 5, 5, 10]);
+  const lastDay = core.periodCountdown(period, "2026-10-16");
+  assert.equal(lastDay.left, 1); // today still counts
+  assert.equal(core.periodCountdown(period, "2026-10-17").phase, "after");
+});
+
 console.log(`\n${passed} passed`);

@@ -179,3 +179,27 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* special periods (the internship) in the countdowns */
+.countdown.period-count {
+  border-color: var(--intern);
+  background: color-mix(in srgb, var(--intern) 16%, var(--field-bg));
+  color: inherit;
+  text-decoration: none;
+}
+
+.period-count .count-num {
+  color: #ff8fd8;
+}
+
+.period-progress {
+  display: block;
+  width: 100%;
+  height: 6px;
+  margin-top: 6px;
+  border-color: var(--intern);
+}
+
+.period-progress > span {
+  background: var(--intern);
+}

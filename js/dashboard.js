@@ -82,20 +82,35 @@
 
   function renderCountdowns(d) {
     const list = d.countdowns.slice().sort((a, b) => (a.date < b.date ? -1 : 1));
-    $("countdowns").replaceChildren(...(list.length ? list.map((c) => {
-      const left = LifeCore.daysBetween(today, c.date);
-      const big = left > 0 ? String(left) : left === 0 ? "Today" : "Done";
-      const unit = left > 1 ? "days to go" : left === 1 ? "day to go" : left === 0 ? "it's here!" : `${-left} day${left === -1 ? "" : "s"} ago`;
-      return h("div", { class: `countdown${left < 0 ? " is-past" : left <= 7 ? " is-soon" : ""}` },
-        h("strong", { class: "count-num" }, big),
-        h("span", { class: "count-unit" }, unit),
-        h("span", { class: "count-title" }, c.title),
-        h("span", { class: "when" }, short(c.date)),
-        h("button", { type: "button", class: "icon-btn count-del", "aria-label": `Remove countdown ${c.title}`, onclick: () => {
-          LifeData.save("countdowns", LifeData.load("countdowns").filter((x) => x.id !== c.id));
-          render();
-        } }, "✕"));
-    }) : [h("p", { class: "empty-note" }, "Count down to exams, trips, birthdays or launch day.")]));
+    // special periods (e.g. the internship) count down in weekdays, not days
+    const periods = PlannerCore.PERIODS.map((p) => ({ p, c: PlannerCore.periodCountdown(p, today) }))
+      .filter(({ c }) => c.phase !== "after")
+      .map(({ p, c }) => h("a", { class: `countdown period-count ${p.className}`, href: "planner.html", title: `${c.done} of ${c.total} weekdays done` },
+        h("strong", { class: "count-num" }, String(c.phase === "before" ? c.untilStart : c.left)),
+        h("span", { class: "count-unit" }, c.phase === "before" ? "weekdays until it starts" : "weekdays left"),
+        h("span", { class: "count-title" }, p.label),
+        h("span", { class: "when" }, `ends ${short(p.end)}`),
+        c.phase === "during" ? h("span", { class: "bar period-progress" }, h("span", { style: `width:${Math.round((c.done / c.total) * 100)}%` })) : null));
+    if (periods.length || list.length) {
+      $("countdowns").replaceChildren(...periods, ...list.map(countdownCard));
+      return;
+    }
+    $("countdowns").replaceChildren(h("p", { class: "empty-note" }, "Count down to exams, trips, birthdays or launch day."));
+  }
+
+  function countdownCard(c) {
+    const left = LifeCore.daysBetween(today, c.date);
+    const big = left > 0 ? String(left) : left === 0 ? "Today" : "Done";
+    const unit = left > 1 ? "days to go" : left === 1 ? "day to go" : left === 0 ? "it's here!" : `${-left} day${left === -1 ? "" : "s"} ago`;
+    return h("div", { class: `countdown${left < 0 ? " is-past" : left <= 7 ? " is-soon" : ""}` },
+      h("strong", { class: "count-num" }, big),
+      h("span", { class: "count-unit" }, unit),
+      h("span", { class: "count-title" }, c.title),
+      h("span", { class: "when" }, short(c.date)),
+      h("button", { type: "button", class: "icon-btn count-del", "aria-label": `Remove countdown ${c.title}`, onclick: () => {
+        LifeData.save("countdowns", LifeData.load("countdowns").filter((x) => x.id !== c.id));
+        render();
+      } }, "✕"));
   }
 
   $("countToggle").addEventListener("click", () => {

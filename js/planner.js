@@ -4,7 +4,7 @@
 (() => {
   "use strict";
 
-  const { dateKey, parseKey, itemsFor, dayStatus, isWeekendKey } = PlannerCore;
+  const { dateKey, parseKey, itemsFor, dayStatus, isWeekendKey, periodFor, periodCountdown, PERIODS } = PlannerCore;
 
   const KEYS = {
     days: "plannerData",
@@ -22,12 +22,6 @@
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December",
   ];
-  // Date ranges whose weekdays get their own calendar color (unless the day is busy or done).
-  const PERIODS = [
-    { start: "2026-10-05", end: "2027-02-19", className: "intern", label: "internship" },
-  ];
-  const periodFor = (key) => (isWeekendKey(key) ? null : PERIODS.find((p) => key >= p.start && key <= p.end) || null);
-
   const REPEAT_LABELS = { daily: "every day", weekdays: "weekdays", weekly: "weekly", monthly: "monthly" };
 
   const $ = (id) => document.getElementById(id);
@@ -83,6 +77,47 @@
     const weekend = date.getDay() === 0 || date.getDay() === 6;
     header.classList.toggle("is-weekend", weekend);
     header.classList.toggle("is-weekday", !weekend);
+    renderPeriodCountdown();
+  }
+
+  /* ---------- Internship countdown (weekdays left) ---------- */
+
+  let countdownKey = null;
+
+  function renderPeriodCountdown() {
+    const key = todayKey();
+    if (key === countdownKey) return; // only changes when the date does
+    countdownKey = key;
+    const box = $("periodCountdown");
+    box.replaceChildren();
+    PERIODS.forEach((period) => {
+      const c = periodCountdown(period, key);
+      const pill = document.createElement("div");
+      pill.className = `period-pill ${period.className}`;
+      const big = document.createElement("strong");
+      const text = document.createElement("span");
+      const ends = shortDate(period.end);
+      if (c.phase === "before") {
+        big.textContent = c.untilStart;
+        text.textContent = `weekday${c.untilStart === 1 ? "" : "s"} until ${period.label.toLowerCase()} starts`;
+      } else if (c.phase === "during") {
+        big.textContent = c.left;
+        text.textContent = `weekday${c.left === 1 ? "" : "s"} of ${period.label.toLowerCase()} left (ends ${ends})`;
+      } else {
+        big.textContent = "✓";
+        text.textContent = `${period.label} complete!`;
+      }
+      pill.append(big, text);
+      if (c.phase === "during") {
+        const bar = document.createElement("span");
+        bar.className = "period-bar";
+        bar.style.setProperty("--done", `${Math.round((c.done / c.total) * 100)}%`);
+        bar.title = `${c.done} of ${c.total} weekdays done`;
+        pill.append(bar);
+      }
+      pill.title = `${period.label}: ${shortDate(period.start)} to ${ends}, ${c.total} weekdays in all`;
+      box.append(pill);
+    });
   }
 
   /* ---------- Calendar ---------- */

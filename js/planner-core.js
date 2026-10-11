@@ -208,7 +208,44 @@
     return { overdue, upcoming };
   }
 
+  /* ---------- Special periods (e.g. an internship) ---------- */
+
+  // Date ranges whose weekdays get their own calendar color and a countdown.
+  const PERIODS = [
+    { start: "2026-10-05", end: "2027-02-19", className: "intern", label: "Internship" },
+  ];
+
+  /** The period a weekday falls in, or null (weekends never belong to a period). */
+  function periodFor(key, periods = PERIODS) {
+    if (isWeekendKey(key)) return null;
+    return periods.find((p) => key >= p.start && key <= p.end) || null;
+  }
+
+  /** Weekdays from `fromKey` to `toKey`, both included. */
+  function weekdaysBetween(fromKey, toKey) {
+    let count = 0;
+    for (let key = fromKey; key <= toKey; key = addDays(key, 1)) {
+      if (!isWeekendKey(key)) count++;
+    }
+    return count;
+  }
+
+  /**
+   * Where today sits in a period: "before" (with weekdays until it starts), "during"
+   * (weekdays left, today included) or "after". Also the total and finished weekdays.
+   */
+  function periodCountdown(period, todayKey) {
+    const total = weekdaysBetween(period.start, period.end);
+    if (todayKey < period.start) {
+      return { phase: "before", total, done: 0, left: total, untilStart: weekdaysBetween(todayKey, addDays(period.start, -1)) };
+    }
+    if (todayKey > period.end) return { phase: "after", total, done: total, left: 0 };
+    const left = weekdaysBetween(todayKey, period.end);
+    return { phase: "during", total, done: total - left, left };
+  }
+
   const api = {
+    PERIODS, periodFor, weekdaysBetween, periodCountdown,
     FREQUENCIES, dateKey, parseKey, weekdayOf, addDays, isWeekendKey,
     occursOn, itemsFor, dayStatus, addTask, setDone, removeItem, stopRepeating,
     pruneDay, ensureDay, search, agenda,
