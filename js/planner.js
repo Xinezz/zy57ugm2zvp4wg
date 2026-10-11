@@ -58,6 +58,9 @@
   function saveAll() {
     const ok = Store.write(KEYS.days, days) && Store.write(KEYS.rules, rules);
     if (!ok) showToast("Could not save. Your browser storage may be full.");
+    // finished tasks earn XP and can unlock achievements (data.js / nav.js)
+    if (typeof LifeData !== "undefined") LifeData.checkAchievements();
+    if (window.SiteNav) SiteNav.refreshLevel();
   }
 
   /* ---------- Header clock ---------- */

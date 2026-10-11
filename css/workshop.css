@@ -1,0 +1,178 @@
+/* workshop.css - the Project Workshop board */
+
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.kanban-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 220px;
+  padding: 10px;
+  border: 3px solid color-mix(in srgb, var(--gold) 60%, transparent);
+  border-radius: var(--wobble-lg);
+  background: var(--panel-bg);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.kanban-col.drop-target {
+  border-color: var(--gold-light);
+  background: color-mix(in srgb, var(--gold) 10%, var(--panel-bg));
+}
+
+.col-done { border-color: color-mix(in srgb, var(--done) 70%, transparent); }
+
+.kanban-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  font-size: 1.3rem;
+  color: var(--gold-light);
+}
+
+.kanban-count {
+  min-width: 26px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--field-bg);
+  color: var(--gold);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.kanban-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 2px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  border-radius: var(--wobble-sm);
+  background: var(--field-bg);
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+
+.project-card:focus-visible,
+.project-card:hover {
+  border-color: var(--gold);
+}
+
+@media (hover: hover) {
+  .project-card:hover {
+    transform: translateY(-2px) rotate(-0.4deg);
+  }
+}
+
+.project-card.dragging {
+  opacity: 0.45;
+}
+
+.project-card-title {
+  font-size: 1.2rem;
+  color: var(--cream);
+  word-break: break-word;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.project-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  color: var(--gold-dim);
+  font-size: 0.9rem;
+}
+
+.bug-count { color: #ff9a8a; }
+.published { color: var(--done); }
+
+.project-deadline {
+  color: var(--gold);
+  font-size: 0.9rem;
+}
+
+.project-deadline.overdue { color: #ff8a8a; }
+
+.card-moves {
+  display: flex;
+  justify-content: space-between;
+}
+
+.move-btn {
+  width: 34px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--gold);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.move-btn:hover { background: color-mix(in srgb, var(--gold) 18%, transparent); }
+
+.add-card { align-self: flex-start; }
+
+/* editor */
+.progress-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.progress-summary .bar { flex: 1; }
+
+.add-row { margin-top: 6px; }
+
+.date-field { flex: 0 0 160px !important; min-width: 0 !important; }
+.kind-field { flex: 0 0 120px !important; min-width: 0 !important; }
+
+.kind-badge {
+  flex-shrink: 0;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.kind-note { background: #2a2518; color: var(--gold-light); }
+.kind-bug { background: #4a1a1a; color: #ffb4a8; }
+.kind-decision { background: #13353a; color: #9ee6ec; }
+
+.project-actions { margin-top: 18px; }
+
+.project-actions .big-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 1000px) {
+  .kanban { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .kanban { grid-template-columns: 1fr; }
+  .kanban-col { min-height: 0; }
+  .date-field, .kind-field { flex: 1 1 100% !important; }
+}
+
+@media (pointer: coarse) {
+  .move-btn { width: 44px; height: 36px; }
+}

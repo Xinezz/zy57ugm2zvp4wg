@@ -1,0 +1,181 @@
+/* dashboard.css - Mission Control (index.html) */
+
+.dash-top {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.today-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.today-tasks {
+  flex: 1;
+  min-width: 0;
+}
+
+.today-tasks .list {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.quick-add {
+  margin-top: 10px;
+}
+
+.dash-side {
+  display: grid;
+  gap: 16px;
+}
+
+.mini-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.mini-card:hover,
+.mini-card:focus-visible {
+  border-color: var(--gold-light);
+  transform: translateY(-2px);
+}
+
+.mini-label {
+  color: var(--gold);
+  font-size: 1.05rem;
+}
+
+.mini-card strong {
+  font-weight: 400;
+  font-size: 1.9rem;
+  line-height: 1.1;
+  color: var(--gold-light);
+}
+
+.count-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.count-form .field {
+  flex: 1 1 140px;
+  width: auto;
+}
+
+.countdowns {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.countdown {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 8px;
+  border: 2px solid color-mix(in srgb, var(--gold) 40%, transparent);
+  border-radius: var(--wobble-sm);
+  background: var(--field-bg);
+  text-align: center;
+}
+
+.countdown.is-soon {
+  border-color: var(--gold-light);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--gold) 35%, transparent);
+}
+
+.countdown.is-past {
+  opacity: 0.55;
+}
+
+.count-num {
+  font-weight: 400;
+  font-size: 2.3rem;
+  line-height: 1;
+  color: var(--gold-light);
+}
+
+.count-unit {
+  color: var(--gold-dim);
+  font-size: 0.9rem;
+}
+
+.count-title {
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.count-del {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+.list-item a {
+  color: inherit;
+}
+
+.up-deadline .up-tag {
+  border-color: var(--busy, #b3262e);
+}
+
+.project-row .bar {
+  display: block;
+  margin: 6px 0 2px;
+}
+
+.project-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.project-meta {
+  font-size: 0.9rem;
+}
+
+#weekChart {
+  margin-top: 12px;
+}
+
+@media (max-width: 800px) {
+  .dash-top {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-side {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .mini-card strong {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .today-body {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .today-tasks {
+    width: 100%;
+  }
+
+  .dash-side {
+    grid-template-columns: 1fr;
+  }
+}

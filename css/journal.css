@@ -1,0 +1,219 @@
+/* journal.css - Daily Reflection Journal */
+
+.day-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.day-switch .field {
+  width: auto;
+  padding: 4px 8px;
+}
+
+.day-switch .chip {
+  min-width: 38px;
+  padding: 4px 10px;
+}
+
+.day-switch.small .chip {
+  min-width: 32px;
+  padding: 1px 8px;
+  font-size: 0.9rem;
+}
+
+.day-switch.small #weekLabel {
+  font-size: 1rem;
+}
+
+.journal-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.journal-card .label {
+  margin-bottom: 10px;
+}
+
+.journal-card textarea.field {
+  min-height: 86px;
+}
+
+.save-state {
+  font-size: 0.95rem;
+  color: var(--gold-dim);
+}
+
+.mood-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 12px;
+}
+
+.moods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mood {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 2px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  border-radius: var(--wobble-sm);
+  background: transparent;
+  color: var(--cream);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.mood[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 22%, transparent);
+  color: var(--gold-light);
+}
+
+/* tiny drawn faces: eyes from the background, mouth from ::after */
+.mood-face {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 38%, #1a1306 1.6px, transparent 2px),
+    radial-gradient(circle at 66% 38%, #1a1306 1.6px, transparent 2px),
+    var(--gold);
+}
+
+.mood-face::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  top: 10px;
+  height: 4px;
+  border: 2px solid #1a1306;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.mood-1::after, .mood-2::after {
+  top: 11px;
+  border: 2px solid #1a1306;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+
+.mood-3::after {
+  top: 11px;
+  height: 0;
+  border: none;
+  border-top: 2px solid #1a1306;
+  border-radius: 0;
+}
+
+.mood-1 { background-color: #c86a5a; }
+.mood-5 { background-color: var(--gold-light); }
+
+.highlight-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--gold-light);
+  cursor: pointer;
+}
+
+.highlight-row input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--gold);
+}
+
+.journal-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tick {
+  width: 16px;
+  color: var(--gold);
+  text-align: center;
+}
+
+.entry-link {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 2px solid transparent;
+  border-radius: var(--wobble-sm);
+  background: var(--field-bg);
+  color: var(--cream);
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.entry-link:hover,
+.entry-link.is-current {
+  border-color: var(--gold);
+}
+
+.entry-link .snippet {
+  overflow: hidden;
+  color: var(--gold-dim);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.star {
+  color: var(--gold-light);
+}
+
+.recap-highlight blockquote {
+  margin: 0;
+  padding: 10px 14px;
+  border-left: 4px solid var(--gold);
+  border-radius: 0 var(--wobble-sm) var(--wobble-sm) 0;
+  background: var(--field-bg);
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.recap-highlight cite {
+  display: block;
+  margin-top: 4px;
+  color: var(--gold-dim);
+  font-size: 0.95rem;
+  font-style: normal;
+}
+
+.recap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0 16px;
+}
+
+@media (max-width: 800px) {
+  .journal-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .page-head .day-switch {
+    width: 100%;
+  }
+
+  .page-head .day-switch .field {
+    flex: 1;
+  }
+}

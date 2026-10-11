@@ -1,0 +1,161 @@
+/* achievements.css - the Achievements page */
+
+.level-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.level-medal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  border: 4px solid var(--gold);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold) 55%, var(--gold-dim));
+  box-shadow: 0 0 22px color-mix(in srgb, var(--gold) 50%, transparent);
+  color: #1a1306;
+  font-size: 2.6rem;
+}
+
+.level-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.level-bar {
+  height: 16px;
+  border-radius: 8px;
+}
+
+.level-info p {
+  margin: 6px 0 0;
+}
+
+.xp-amount,
+.best-value {
+  color: var(--gold-light);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.small-note {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+.ach {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 2px solid color-mix(in srgb, var(--gold) 40%, transparent);
+  border-radius: var(--wobble-sm);
+  background: var(--field-bg);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+button.ach {
+  cursor: pointer;
+}
+
+button.ach:hover,
+button.ach:focus-visible {
+  border-color: var(--gold);
+}
+
+.ach.is-locked {
+  opacity: 0.7;
+}
+
+.ach-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ach-text strong {
+  color: var(--gold-light);
+  font-weight: 400;
+  font-size: 1.1rem;
+}
+
+.ach-text .muted {
+  font-size: 0.92rem;
+}
+
+.ach-bar {
+  height: 6px;
+  margin-top: 4px;
+}
+
+.skill-group + .skill-group {
+  margin-top: 4px;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.icon-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 8px;
+}
+
+.icon-choice {
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.icon-choice .badge-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.icon-choice .badge-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-choice[aria-checked="false"] .badge-icon {
+  filter: grayscale(0.8) brightness(0.6);
+}
+
+.icon-choice[aria-checked="true"] {
+  border-color: var(--gold-light);
+}
+
+@media (max-width: 600px) {
+  .level-card {
+    gap: 12px;
+  }
+
+  .level-medal {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+
+  .ach-grid {
+    grid-template-columns: 1fr;
+  }
+}

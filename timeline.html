@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Life Timeline</title>
+<link rel="icon" href="assets/notes-icon.gif" type="image/gif">
+<link rel="preload" href="assets/fonts/PatrickHand-latin.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="theme-color" content="#14110a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Planner">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/life.css">
+<link rel="stylesheet" href="css/timeline.css">
+<script src="js/theme.js"></script>
+<script src="js/loader.js"></script>
+</head>
+<body>
+
+<div class="loader" id="loader" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <img class="loader-icon" src="assets/notes-icon.gif" alt="">
+  <div class="loader-title">Loading</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div class="loader-pct">0%</div>
+  <div class="loader-tip">Tip: the time machine shows everything you recorded on any past day.</div>
+</div>
+<noscript><style>.loader { display: none; }</style></noscript>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Life Timeline</h1>
+      <p class="page-sub" id="timelineSub">Your story so far, newest first.</p>
+    </div>
+    <button type="button" class="chip primary" id="addEvent">+ Add an event</button>
+  </div>
+
+  <section class="card machine" aria-labelledby="machineHeading">
+    <h2 class="card-title" id="machineHeading">Time machine</h2>
+    <div class="machine-controls">
+      <button type="button" class="chip" data-back="7">1 week ago</button>
+      <button type="button" class="chip" data-back="30">1 month ago</button>
+      <button type="button" class="chip" data-back="365">1 year ago</button>
+      <button type="button" class="chip" data-back="730">2 years ago</button>
+      <input type="date" class="field" id="machineDate" aria-label="Travel to a date">
+    </div>
+    <div class="machine-result" id="machineResult" aria-live="polite"></div>
+  </section>
+
+  <div class="kind-filters" id="kindFilters" role="group" aria-label="Show event types"></div>
+  <div class="timeline" id="timeline"></div>
+</main>
+
+<dialog id="eventDialog" class="dialog" aria-labelledby="eventDialogTitle">
+  <button type="button" class="dialog-close" data-close="eventDialog" aria-label="Close">&times;</button>
+  <h2 id="eventDialogTitle">Add an event</h2>
+  <label class="label">What happened?
+    <input type="text" class="field" id="eTitle" maxlength="100" placeholder="e.g. Started my internship">
+  </label>
+  <label class="label">Type
+    <select class="field" id="eKind">
+      <option value="event">Life event</option>
+      <option value="milestone">Milestone</option>
+      <option value="achievement">Achievement</option>
+    </select>
+  </label>
+  <label class="label">Date
+    <input type="date" class="field" id="eDate">
+  </label>
+  <label class="label">Details (optional)
+    <textarea class="field" id="eDescription" maxlength="1000"></textarea>
+  </label>
+  <div class="dialog-actions">
+    <button type="button" class="big-btn" id="eSave">Save</button>
+    <button type="button" class="big-btn secondary" id="eDelete" hidden>Delete</button>
+  </div>
+</dialog>
+
+<script src="js/ui-sound.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/planner-core.js"></script>
+<script src="js/life-core.js"></script>
+<script src="js/data.js"></script>
+<script src="js/museum-data.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/sync-core.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Project Workshop</title>
+<link rel="icon" href="assets/notes-icon.gif" type="image/gif">
+<link rel="preload" href="assets/fonts/PatrickHand-latin.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="theme-color" content="#14110a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Planner">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/life.css">
+<link rel="stylesheet" href="css/workshop.css">
+<script src="js/theme.js"></script>
+<script src="js/loader.js"></script>
+</head>
+<body>
+
+<div class="loader" id="loader" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <img class="loader-icon" src="assets/notes-icon.gif" alt="">
+  <div class="loader-title">Loading</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div class="loader-pct">0%</div>
+  <div class="loader-tip">Tip: drag a project card to another column to change its stage.</div>
+</div>
+<noscript><style>.loader { display: none; }</style></noscript>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Project Workshop</h1>
+      <p class="page-sub">Projects still being built. When one is finished, publish it to the museum in one click.</p>
+    </div>
+    <button type="button" class="big-btn" id="newProjectBtn">New project</button>
+  </div>
+
+  <div class="kanban" id="board" aria-label="Project board"></div>
+</main>
+
+<dialog id="projectDialog" class="dialog wide" aria-labelledby="pTitleHeading">
+  <button type="button" class="dialog-close" data-close="projectDialog" aria-label="Close">&times;</button>
+  <h2 id="pTitleHeading">Project</h2>
+
+  <div class="form-grid">
+    <label class="label">Title
+      <input type="text" class="field" id="pTitle" maxlength="80" placeholder="e.g. Line-following robot">
+    </label>
+    <div class="form-row">
+      <label class="label" style="flex:1">Stage
+        <select class="field" id="pStatus">
+          <option value="backlog">Backlog</option>
+          <option value="progress">In Progress</option>
+          <option value="testing">Testing</option>
+          <option value="done">Completed</option>
+        </select>
+      </label>
+      <label class="label" style="flex:1">Deadline
+        <input type="date" class="field" id="pDeadline">
+      </label>
+    </div>
+    <label class="label">What is it?
+      <textarea class="field" id="pDescription" maxlength="1200" placeholder="Goal, parts, what it should do..."></textarea>
+    </label>
+    <label class="label">Tags (comma separated)
+      <input type="text" class="field" id="pTags" maxlength="160" placeholder="Arduino, CAD, website">
+    </label>
+  </div>
+
+  <div class="progress-summary">
+    <div class="bar"><span id="pProgressBar"></span></div>
+    <span id="pProgressText" class="muted"></span>
+  </div>
+
+  <h3 class="section-title">Milestones</h3>
+  <ul class="list" id="pMilestones"></ul>
+  <div class="form-row add-row">
+    <input type="text" class="field" id="pMilestoneText" placeholder="New milestone" maxlength="120">
+    <input type="date" class="field date-field" id="pMilestoneDue" aria-label="Milestone due date">
+    <button type="button" class="chip" id="pMilestoneAdd">Add</button>
+  </div>
+
+  <h3 class="section-title">Notes, bugs and design decisions</h3>
+  <ul class="list" id="pNotes"></ul>
+  <div class="form-row add-row">
+    <select class="field kind-field" id="pNoteKind" aria-label="Kind">
+      <option value="note">Note</option>
+      <option value="bug">Bug</option>
+      <option value="decision">Decision</option>
+    </select>
+    <input type="text" class="field" id="pNoteText" placeholder="Write it down..." maxlength="400">
+    <button type="button" class="chip" id="pNoteAdd">Add</button>
+  </div>
+
+  <h3 class="section-title">Progress log</h3>
+  <ul class="list" id="pLog"></ul>
+  <div class="form-row add-row">
+    <input type="date" class="field date-field" id="pLogDate" aria-label="Log date">
+    <input type="text" class="field" id="pLogText" placeholder="What did you get done?" maxlength="400">
+    <button type="button" class="chip" id="pLogAdd">Add</button>
+  </div>
+
+  <h3 class="section-title">Links (GitHub, CAD files, videos)</h3>
+  <ul class="list" id="pLinks"></ul>
+  <div class="form-row add-row">
+    <input type="text" class="field" id="pLinkLabel" placeholder="Label, e.g. GitHub" maxlength="60">
+    <input type="text" class="field" id="pLinkUrl" placeholder="https://..." maxlength="400">
+    <button type="button" class="chip" id="pLinkAdd">Add</button>
+  </div>
+
+  <h3 class="section-title">Linked Knowledge Vault notes</h3>
+  <ul class="list" id="pVault"></ul>
+
+  <div class="dialog-actions project-actions">
+    <button type="button" class="big-btn" id="pPublish">Publish to museum</button>
+    <button type="button" class="big-btn secondary" id="pDelete">Delete project</button>
+    <button type="button" class="big-btn secondary" data-close="projectDialog">Done</button>
+  </div>
+</dialog>
+
+<script src="js/ui-sound.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/life-core.js"></script>
+<script src="js/data.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/workshop.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/sync-core.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

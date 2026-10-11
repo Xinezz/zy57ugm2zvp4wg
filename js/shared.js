@@ -63,6 +63,36 @@ function downscaleImage(file, maxSize, quality = 0.85) {
   });
 }
 
+/** Builds an element safely: h("li", { class: "x", onclick: fn }, "text", childNode). Text is never treated as HTML. */
+function h(tag, props = {}, ...children) {
+  const node = document.createElement(tag);
+  Object.entries(props || {}).forEach(([key, value]) => {
+    if (value === null || value === undefined || value === false) return;
+    if (key === "class") node.className = value;
+    else if (key === "text") node.textContent = value;
+    else if (key === "dataset") Object.assign(node.dataset, value);
+    else if (key.startsWith("on") && typeof value === "function") node.addEventListener(key.slice(2), value);
+    else if (key === "value") node.value = value;
+    else if (key === "checked") node.checked = !!value;
+    else if (value === true) node.setAttribute(key, "");
+    else node.setAttribute(key, value);
+  });
+  children.flat().forEach((child) => {
+    if (child === null || child === undefined || child === false) return;
+    node.append(child instanceof Node ? child : String(child));
+  });
+  return node;
+}
+
+/** Only web links and this site's own pages may become clickable links. */
+function safeUrl(value) {
+  const v = String(value || "").trim();
+  if (!v) return "";
+  if (/^(https?:\/\/|\/|\.\/|[\w-]+\.html?([?#].*)?$)/i.test(v)) return v;
+  if (/^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(v)) return `https://${v}`;
+  return "";
+}
+
 let toastTimer = null;
 
 /** Shows a short message at the bottom of the page (alert() is blocked in some browsers). */

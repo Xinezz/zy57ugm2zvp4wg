@@ -127,12 +127,39 @@
     const locked = running && phase === "focus";
     $("lockNote").hidden = !locked;
     $("backLink").classList.toggle("disabled", locked);
+    document.body.classList.toggle("locked-in", locked);
+    $("finishBtn").hidden = !(phase === "focus" && remainingMs < totalMs);
     document.querySelectorAll("#settingsPanel input, #settingsPanel button").forEach((node) => {
       node.disabled = running;
     });
 
-    document.title = running ? `${formatTime(remainingMs)} - ${label}` : "Focus Mode";
+    document.title = running ? `${formatTime(remainingMs)} - ${label}` : "Lock-In Room";
   }
+
+  /* ---------- session events, used by the Lock-In Room (lockin.js) ---------- */
+
+  let sessionStart = null;
+
+  function announceEnd(minutes, early) {
+    document.dispatchEvent(new CustomEvent("focus:end", {
+      detail: { minutes, early, start: sessionStart ? new Date(sessionStart).toISOString() : new Date().toISOString() },
+    }));
+    sessionStart = null;
+  }
+
+  /** Ends the current focus session now, logging the time actually spent. */
+  function finishEarly() {
+    if (phase !== "focus" || remainingMs >= totalMs) return;
+    const left = running ? Math.max(0, endTime - Date.now()) : remainingMs;
+    const minutes = Math.round((totalMs - left) / 60000);
+    stopTicker();
+    running = false;
+    if (minutes >= 10) addSession();
+    announceEnd(minutes, true);
+    setPhase("rest", false);
+  }
+
+  window.FocusTimer = { finishEarly, current: () => ({ phase, running }) };
 
   function stopTicker() {
     if (ticker) {
@@ -155,6 +182,10 @@
   }
 
   function startTimer() {
+    if (phase === "focus" && remainingMs >= totalMs) {
+      sessionStart = Date.now();
+      document.dispatchEvent(new CustomEvent("focus:start"));
+    }
     running = true;
     endTime = Date.now() + remainingMs;
     stopTicker();
@@ -179,6 +210,7 @@
     chime();
     if (phase === "focus") {
       addSession();
+      announceEnd(Math.round(totalMs / 60000), false);
       setPhase("rest", true);
     } else {
       setPhase("focus", false);

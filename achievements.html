@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Achievements</title>
+<link rel="icon" href="assets/notes-icon.gif" type="image/gif">
+<link rel="preload" href="assets/fonts/PatrickHand-latin.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="theme-color" content="#14110a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Planner">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/life.css">
+<link rel="stylesheet" href="css/achievements.css">
+<script src="js/theme.js"></script>
+<script src="js/loader.js"></script>
+</head>
+<body>
+
+<div class="loader" id="loader" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <img class="loader-icon" src="assets/notes-icon.gif" alt="">
+  <div class="loader-title">Loading</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div class="loader-pct">0%</div>
+  <div class="loader-tip">Tip: XP comes from finishing things. Focus sessions add a flat bonus each.</div>
+</div>
+<noscript><style>.loader { display: none; }</style></noscript>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Achievements</h1>
+      <p class="page-sub">Your XP, badges, skills and personal bests.</p>
+    </div>
+  </div>
+
+  <section class="card level-card" aria-labelledby="levelHeading">
+    <div class="level-medal" aria-hidden="true"><span id="levelNumber">1</span></div>
+    <div class="level-info">
+      <h2 class="card-title" id="levelHeading"><span id="levelTitle">Level 1</span><span class="muted" id="levelXp"></span></h2>
+      <div class="bar level-bar"><span id="levelBar"></span></div>
+      <p class="muted" id="levelNext"></p>
+    </div>
+  </section>
+
+  <div class="grid grid-2">
+    <section class="card" aria-labelledby="xpHeading">
+      <h2 class="card-title" id="xpHeading">Where your XP comes from</h2>
+      <ul class="list xp-list" id="xpList"></ul>
+    </section>
+
+    <section class="card" aria-labelledby="bestHeading">
+      <h2 class="card-title" id="bestHeading">Personal bests</h2>
+      <ul class="list" id="bestList"></ul>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="achHeading">
+    <h2 class="card-title" id="achHeading"><span>Milestone badges</span><span class="muted" id="achCount"></span></h2>
+    <div class="ach-grid" id="achGrid"></div>
+  </section>
+
+  <div class="grid grid-2">
+    <section class="card" aria-labelledby="badgeHeading">
+      <h2 class="card-title" id="badgeHeading"><span>Custom badges</span><button type="button" class="chip primary" id="addBadge">+ New badge</button></h2>
+      <p class="muted small-note">For real-life wins: a competition, a certificate, your first PCB that worked.</p>
+      <div class="ach-grid" id="badgeGrid"></div>
+    </section>
+
+    <section class="card" aria-labelledby="skillHeading">
+      <h2 class="card-title" id="skillHeading"><span>Skills</span><button type="button" class="chip primary" id="addSkill">+ Log a skill</button></h2>
+      <p class="muted small-note">Each skill you level up is worth XP and lands on your timeline.</p>
+      <div class="skill-groups" id="skillGroups"></div>
+    </section>
+  </div>
+</main>
+
+<dialog id="badgeDialog" class="dialog" aria-labelledby="badgeDialogTitle">
+  <button type="button" class="dialog-close" data-close="badgeDialog" aria-label="Close">&times;</button>
+  <h2 id="badgeDialogTitle">New badge</h2>
+  <label class="label">What did you achieve?
+    <input type="text" class="field" id="bTitle" maxlength="80" placeholder="e.g. Won the robotics competition">
+  </label>
+  <label class="label">Details (optional)
+    <textarea class="field" id="bDescription" maxlength="500"></textarea>
+  </label>
+  <label class="label">Date
+    <input type="date" class="field" id="bDate">
+  </label>
+  <span class="label">Icon</span>
+  <div class="icon-picker" id="bIcons" role="radiogroup" aria-label="Badge icon"></div>
+  <div class="dialog-actions">
+    <button type="button" class="big-btn" id="bSave">Save badge</button>
+    <button type="button" class="big-btn secondary" id="bDelete" hidden>Delete</button>
+  </div>
+</dialog>
+
+<dialog id="skillDialog" class="dialog" aria-labelledby="skillDialogTitle">
+  <button type="button" class="dialog-close" data-close="skillDialog" aria-label="Close">&times;</button>
+  <h2 id="skillDialogTitle">Log a skill</h2>
+  <label class="label">Skill
+    <input type="text" class="field" id="sName" maxlength="60" placeholder="e.g. PWM motor control">
+  </label>
+  <label class="label">Area
+    <input type="text" class="field" id="sCategory" maxlength="40" list="skillAreas" placeholder="e.g. Electronics">
+    <datalist id="skillAreas"></datalist>
+  </label>
+  <label class="label">Date
+    <input type="date" class="field" id="sDate">
+  </label>
+  <label class="label">How did you learn it? (optional)
+    <textarea class="field" id="sNote" maxlength="500"></textarea>
+  </label>
+  <div class="dialog-actions">
+    <button type="button" class="big-btn" id="sSave">Save skill</button>
+    <button type="button" class="big-btn secondary" id="sDelete" hidden>Delete</button>
+  </div>
+</dialog>
+
+<script src="js/ui-sound.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/planner-core.js"></script>
+<script src="js/life-core.js"></script>
+<script src="js/data.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/achievements.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/sync-core.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

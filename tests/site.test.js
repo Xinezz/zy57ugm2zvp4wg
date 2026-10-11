@@ -21,10 +21,16 @@ function test(name, fn) {
 }
 
 const pages = {
-  "index.html": ["js/planner.js", "js/shared.js", "js/theme.js", "js/sync.js"],
-  "focus.html": ["js/focus.js", "js/shared.js", "js/theme.js", "js/sync.js"],
-  "museum.html": ["js/museum.js", "js/shared.js", "js/theme.js", "js/sync.js"],
-  "gallery.html": ["js/theme.js", "js/sync.js"],
+  "index.html": ["js/dashboard.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
+  "planner.html": ["js/planner.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
+  "focus.html": ["js/focus.js", "js/lockin.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
+  "workshop.html": ["js/workshop.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
+  "journal.html": ["js/journal.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
+  "vault.html": ["js/vault.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
+  "achievements.html": ["js/achievements.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
+  "timeline.html": ["js/timeline.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
+  "museum.html": ["js/museum.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
+  "gallery.html": ["js/theme.js", "js/nav.js", "js/sync.js"],
 };
 
 const withoutQuery = (url) => url.split("?")[0].split("#")[0];
@@ -48,8 +54,13 @@ test("every page loads its own scripts and the theme script", () => {
 });
 
 test("scripts only look up element ids that exist in their page", () => {
-  const checks = { "index.html": "js/planner.js", "focus.html": "js/focus.js", "museum.html": "js/museum.js" };
-  for (const [page, script] of Object.entries(checks)) {
+  const checks = [
+    ["index.html", "js/dashboard.js"], ["planner.html", "js/planner.js"], ["focus.html", "js/focus.js"],
+    ["focus.html", "js/lockin.js"], ["workshop.html", "js/workshop.js"], ["journal.html", "js/journal.js"],
+    ["vault.html", "js/vault.js"], ["achievements.html", "js/achievements.js"], ["timeline.html", "js/timeline.js"],
+    ["museum.html", "js/museum.js"],
+  ];
+  for (const [page, script] of checks) {
     const ids = new Set([...read(page).matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
     const code = read(script);
     const used = new Set([

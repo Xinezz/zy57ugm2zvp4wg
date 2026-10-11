@@ -618,3 +618,104 @@
     width: auto;
   }
 }
+
+/* ==========================================================
+   Lock-In Room extras
+   ========================================================== */
+
+.lockin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.lockin-grid .card,
+.reports {
+  text-align: left;
+}
+
+.lockin-grid textarea.field {
+  min-height: 90px;
+}
+
+.lockin-grid .label + .label {
+  margin-top: 8px;
+}
+
+.small-note {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+
+.park-list {
+  margin-top: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.small-chip {
+  padding: 1px 8px;
+  font-size: 0.85rem;
+}
+
+.ambient-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ambient-btn[aria-pressed="true"] {
+  background: var(--gold);
+  color: #0a0a0a;
+}
+
+.ambient-volume {
+  margin-top: 10px;
+}
+
+.ambient-volume input {
+  flex: 1;
+  accent-color: var(--gold);
+}
+
+.custom-presets {
+  display: contents;
+}
+
+.custom-preset {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.save-preset {
+  font-size: 0.95rem !important;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.check-row input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--gold);
+}
+
+#reflectDialog textarea.field {
+  min-height: 90px;
+}
+
+.reports .chart {
+  margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+  .lockin-grid {
+    grid-template-columns: 1fr;
+  }
+}

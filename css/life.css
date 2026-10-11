@@ -1,0 +1,446 @@
+/* ==========================================================
+   life.css - shared look for the Dashboard, Journal, Workshop,
+   Vault, Achievements and Timeline pages
+   ========================================================== */
+
+.page {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 18px 16px 110px;
+}
+
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 16px;
+}
+
+.page-head h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 400;
+  color: var(--gold-light);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.55);
+}
+
+.page-sub {
+  margin: 2px 0 0;
+  color: var(--gold-dim);
+  font-size: 1.1rem;
+}
+
+/* ---------- cards ---------- */
+.card {
+  padding: 14px 16px;
+  border: 3px solid var(--gold);
+  border-radius: var(--wobble-lg);
+  background: var(--panel-bg);
+  box-shadow: var(--glow);
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 1.45rem;
+  font-weight: 400;
+  color: var(--gold-light);
+}
+
+.card-title a,
+.card-link {
+  font-size: 1rem;
+  color: var(--gold);
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+
+.empty-note {
+  margin: 6px 0;
+  color: var(--gold-dim);
+}
+
+.muted { color: var(--gold-dim); }
+
+/* ---------- forms ---------- */
+.form-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.form-row > .field {
+  flex: 1;
+  min-width: 140px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--gold);
+  font-size: 1.05rem;
+}
+
+.field {
+  padding: 7px 10px;
+  width: 100%;
+}
+
+textarea.field {
+  min-height: 80px;
+  resize: vertical;
+  line-height: 1.4;
+}
+
+select.field {
+  cursor: pointer;
+}
+
+input[type="date"].field {
+  color-scheme: dark;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip.primary {
+  background: var(--gold);
+  color: #0a0a0a;
+}
+
+.chip.danger:hover:not(:disabled) {
+  background: var(--busy);
+  border-color: #ff8a8a;
+  color: #fff;
+}
+
+.chip.armed {
+  background: var(--busy);
+  border-color: #ff8a8a;
+  color: #fff;
+}
+
+.tag {
+  display: inline-block;
+  padding: 1px 9px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+  color: var(--gold);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.tag.clickable {
+  cursor: pointer;
+  background: transparent;
+  font-family: inherit;
+}
+
+.tag.clickable[aria-pressed="true"] {
+  background: var(--gold);
+  color: #0a0a0a;
+}
+
+/* ---------- lists ---------- */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border: 2px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  border-radius: var(--wobble-sm);
+  background: var(--field-bg);
+}
+
+.list-item .grow {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.list-item.is-done .grow {
+  color: var(--gold-dim);
+  text-decoration: line-through;
+}
+
+.list-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  accent-color: var(--gold);
+}
+
+.when {
+  flex-shrink: 0;
+  color: var(--gold);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.icon-btn {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--gold-dim);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  color: var(--busy);
+}
+
+/* ---------- progress bars and rings ---------- */
+.bar {
+  height: 10px;
+  overflow: hidden;
+  border: 2px solid var(--gold-dim);
+  border-radius: 5px;
+  background: var(--field-bg);
+}
+
+.bar > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--gold);
+  transition: width 0.4s ease;
+}
+
+.ring {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+}
+
+.ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring circle {
+  fill: none;
+  stroke-width: 14;
+}
+
+.ring .ring-track {
+  stroke: var(--field-bg);
+}
+
+.ring .ring-fill {
+  stroke: var(--gold);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s ease;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--gold) 60%, transparent));
+}
+
+.ring.is-complete .ring-fill {
+  stroke: var(--done);
+}
+
+.ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.ring-label strong {
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--gold-light);
+  line-height: 1;
+}
+
+.ring-label span {
+  color: var(--gold-dim);
+  font-size: 0.95rem;
+}
+
+/* ---------- small bar chart (weekly summary, focus reports) ---------- */
+.chart {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: end;
+  gap: 6px;
+  height: 140px;
+  padding-top: 8px;
+}
+
+.chart-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 100%;
+}
+
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  flex: 1;
+}
+
+.chart-bar {
+  width: 40%;
+  max-width: 18px;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  background: var(--gold);
+}
+
+.chart-bar.alt {
+  background: var(--done);
+}
+
+.chart-day {
+  color: var(--gold-dim);
+  font-size: 0.85rem;
+}
+
+.chart-col.is-today .chart-day {
+  color: var(--gold-light);
+}
+
+.legend-dots {
+  display: flex;
+  gap: 14px;
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: var(--gold-dim);
+}
+
+.legend-dots span::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  border-radius: 2px;
+  background: var(--gold);
+}
+
+.legend-dots span.alt::before {
+  background: var(--done);
+}
+
+/* ---------- stats ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.stat {
+  padding: 8px 10px;
+  border: 2px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  border-radius: var(--wobble-sm);
+  background: var(--field-bg);
+  text-align: center;
+}
+
+.stat strong {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--gold-light);
+  line-height: 1.1;
+}
+
+.stat span {
+  color: var(--gold-dim);
+  font-size: 0.9rem;
+}
+
+/* ---------- badge icons ---------- */
+.badge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  border: 3px solid var(--gold);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold) 55%, var(--gold-dim));
+  color: #1a1306;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--gold) 45%, transparent);
+}
+
+.badge-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.is-locked .badge-icon {
+  border-color: #3a3428;
+  background: #1d1810;
+  color: #4d4535;
+  box-shadow: none;
+}
+
+/* ---------- dialogs on these pages ---------- */
+.dialog.wide {
+  width: min(760px, 94vw);
+}
+
+.dialog .label + .label {
+  margin-top: 4px;
+}
+
+.section-title {
+  margin: 14px 0 6px;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--gold);
+}
+
+@media (max-width: 600px) {
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 12px;
+  }
+}

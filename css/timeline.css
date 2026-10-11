@@ -1,0 +1,158 @@
+/* timeline.css - the Life Timeline page */
+
+.machine-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.machine-controls .field {
+  width: auto;
+}
+
+.machine-result:empty {
+  display: none;
+}
+
+.machine-result {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 2px dashed color-mix(in srgb, var(--gold) 35%, transparent);
+}
+
+.machine-title {
+  margin: 4px 0;
+  font-weight: 400;
+  font-size: 1.3rem;
+  color: var(--gold-light);
+}
+
+.machine-section p {
+  margin: 4px 0;
+}
+
+.machine-notes {
+  white-space: pre-wrap;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.kind-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 18px 0 6px;
+}
+
+.kind-chip[aria-pressed="false"] {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.tl-month {
+  margin-top: 14px;
+}
+
+.tl-month-title {
+  margin: 0 0 6px;
+  font-weight: 400;
+  font-size: 1.4rem;
+  color: var(--gold);
+}
+
+.tl-list {
+  position: relative;
+  margin: 0;
+  padding: 0 0 0 4px;
+  list-style: none;
+}
+
+.tl-list::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 30px;
+  width: 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--gold) 35%, transparent);
+}
+
+.tl-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.tl-item .badge-icon {
+  position: relative;
+  width: 54px;
+  height: 54px;
+}
+
+.tl-body {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 2px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  border-radius: var(--wobble-sm);
+  background: var(--panel-bg, rgba(10, 10, 10, 0.85));
+}
+
+.tl-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 10px;
+}
+
+.tl-top strong {
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: var(--gold-light);
+  overflow-wrap: anywhere;
+}
+
+.tl-top a {
+  color: inherit;
+}
+
+.tl-body p {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+}
+
+.tl-body .small-chip {
+  margin-top: 6px;
+  padding: 1px 8px;
+  font-size: 0.85rem;
+}
+
+.kind-project .badge-icon { filter: hue-rotate(160deg) saturate(0.8); }
+.kind-skill .badge-icon { filter: hue-rotate(60deg); }
+.kind-update .badge-icon { filter: hue-rotate(220deg) saturate(0.7); }
+.kind-event .badge-icon { filter: hue-rotate(-30deg); }
+
+@media (max-width: 600px) {
+  .tl-item .badge-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .tl-item .badge-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .tl-list::before {
+    left: 23px;
+  }
+}

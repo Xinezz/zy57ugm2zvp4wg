@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Knowledge Vault</title>
+<link rel="icon" href="assets/notes-icon.gif" type="image/gif">
+<link rel="preload" href="assets/fonts/PatrickHand-latin.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="theme-color" content="#14110a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Planner">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/life.css">
+<link rel="stylesheet" href="css/vault.css">
+<script src="js/theme.js"></script>
+<script src="js/loader.js"></script>
+</head>
+<body>
+
+<div class="loader" id="loader" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <img class="loader-icon" src="assets/notes-icon.gif" alt="">
+  <div class="loader-title">Loading</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div class="loader-pct">0%</div>
+  <div class="loader-tip">Tip: put code between ``` lines and it shows as a code snippet.</div>
+</div>
+<noscript><style>.loader { display: none; }</style></noscript>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Knowledge Vault</h1>
+      <p class="page-sub">Everything you learn, searchable and linked to your projects.</p>
+    </div>
+    <button type="button" class="big-btn" id="newNoteBtn">New note</button>
+  </div>
+
+  <div class="vault-layout">
+    <aside class="card vault-side">
+      <input type="search" class="field" id="vaultSearch" placeholder="Search notes..." aria-label="Search notes" autocomplete="off">
+      <h2 class="section-title">Categories</h2>
+      <ul class="list cat-list" id="categories"></ul>
+      <h2 class="section-title">Tags</h2>
+      <div class="tag-cloud" id="tagCloud"></div>
+    </aside>
+
+    <section aria-label="Notes">
+      <p class="muted result-count" id="resultCount"></p>
+      <div class="note-grid" id="noteGrid"></div>
+    </section>
+  </div>
+</main>
+
+<dialog id="noteView" class="dialog wide" aria-labelledby="viewTitle">
+  <button type="button" class="dialog-close" data-close="noteView" aria-label="Close">&times;</button>
+  <h2 id="viewTitle"></h2>
+  <div class="view-meta" id="viewMeta"></div>
+  <div class="note-body" id="viewBody"></div>
+  <h3 class="section-title">Linked projects</h3>
+  <ul class="list" id="viewProjects"></ul>
+  <div class="dialog-actions">
+    <button type="button" class="big-btn" id="viewEdit">Edit</button>
+    <button type="button" class="big-btn secondary" data-close="noteView">Close</button>
+  </div>
+</dialog>
+
+<dialog id="noteEdit" class="dialog wide" aria-labelledby="editHeading">
+  <button type="button" class="dialog-close" data-close="noteEdit" aria-label="Close">&times;</button>
+  <h2 id="editHeading">New note</h2>
+  <div class="form-grid">
+    <label class="label">Title
+      <input type="text" class="field" id="nTitle" maxlength="100" placeholder="e.g. PWM with analogWrite()">
+    </label>
+    <div class="form-row">
+      <label class="label" style="flex:1">Category
+        <select class="field" id="nCategory"></select>
+      </label>
+      <label class="label" style="flex:2">Tags (comma separated)
+        <input type="text" class="field" id="nTags" maxlength="160" placeholder="arduino, motors">
+      </label>
+    </div>
+    <label class="label">Note
+      <textarea class="field note-input" id="nBody" maxlength="20000" placeholder="Explain it to your future self. Put code between ``` lines."></textarea>
+    </label>
+    <div>
+      <span class="label">Link to Workshop projects</span>
+      <div class="project-picks" id="nProjects"></div>
+    </div>
+  </div>
+  <p class="form-error" id="nError" hidden></p>
+  <div class="dialog-actions">
+    <button type="button" class="big-btn" id="nSave">Save note</button>
+    <button type="button" class="big-btn secondary" id="nDelete" hidden>Delete</button>
+    <button type="button" class="big-btn secondary" data-close="noteEdit">Cancel</button>
+  </div>
+</dialog>
+
+<script src="js/ui-sound.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/life-core.js"></script>
+<script src="js/data.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/vault.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/sync-core.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

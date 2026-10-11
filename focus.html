@@ -5,7 +5,7 @@
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="A lock-in focus timer with adjustable focus and rest periods.">
-<title>Focus Mode</title>
+<title>Lock-In Room</title>
 <link rel="icon" href="assets/focus-btn.gif" type="image/gif">
 <link rel="preload" href="assets/fonts/PatrickHand-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#14110a">
@@ -15,6 +15,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Planner">
 <link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/life.css">
 <link rel="stylesheet" href="css/focus.css">
 <script src="js/theme.js"></script>
 <script src="js/loader.js"></script>
@@ -39,8 +40,8 @@
 <main class="focus-app">
 
   <header class="focus-top">
-    <a href="index.html" class="page-link" id="backLink">&larr; Planner</a>
-    <h1>Focus Mode</h1>
+    <a href="index.html" class="page-link" id="backLink">&larr; Home</a>
+    <h1>Lock-In Room</h1>
     <div class="session-count" id="sessionCount">Sessions today: 0</div>
   </header>
 
@@ -60,10 +61,41 @@
       <button type="button" id="startBtn" class="big-btn">Start</button>
       <button type="button" id="resetBtn" class="big-btn secondary">Reset</button>
       <button type="button" id="skipBtn" class="big-btn secondary">Skip</button>
+      <button type="button" id="finishBtn" class="big-btn secondary" hidden>Finish early</button>
     </div>
 
     <div class="lock-note" id="lockNote" hidden>Locked in. Pause to leave or change settings.</div>
   </section>
+
+  <div class="lockin-grid">
+    <section class="card" aria-labelledby="sessionHeading">
+      <h2 class="card-title" id="sessionHeading">This session</h2>
+      <label class="label">Link it to a task or project
+        <select class="field" id="focusLink"></select>
+      </label>
+      <label class="label">Session notes
+        <textarea class="field" id="sessionNotes" maxlength="4000" placeholder="Jot things down as you work. They're saved with the session."></textarea>
+      </label>
+    </section>
+
+    <section class="card" aria-labelledby="parkHeading">
+      <h2 class="card-title" id="parkHeading"><span>Distraction list</span><span class="muted" id="parkCount"></span></h2>
+      <p class="muted small-note">Park random thoughts here without leaving the session. Deal with them later.</p>
+      <div class="form-row">
+        <input type="text" class="field" id="parkInput" maxlength="200" placeholder="e.g. reply to Sam, buy resistors" aria-label="Thought to park">
+        <button type="button" class="chip" id="parkAdd">Park it</button>
+      </div>
+      <ul class="list park-list" id="parkList"></ul>
+    </section>
+
+    <section class="card" aria-labelledby="ambientHeading">
+      <h2 class="card-title" id="ambientHeading">Ambient sound</h2>
+      <div class="ambient-btns" id="ambientBtns" role="group" aria-label="Ambient sounds"></div>
+      <label class="range-row ambient-volume"><span>Volume</span>
+        <input type="range" id="ambientVolume" min="0" max="100" value="40">
+      </label>
+    </section>
+  </div>
 
   <section class="settings-panel" id="settingsPanel" aria-label="Timer settings">
     <h2>Timer settings</h2>
@@ -95,10 +127,43 @@
       <button type="button" class="preset-btn" data-focus="25" data-rest="5">25 / 5</button>
       <button type="button" class="preset-btn" data-focus="50" data-rest="10">50 / 10</button>
       <button type="button" class="preset-btn" data-focus="90" data-rest="20">90 / 20</button>
+      <span id="customPresets" class="custom-presets"></span>
+      <button type="button" class="step-btn save-preset" id="savePreset">Save current as preset</button>
     </div>
   </section>
 
+  <section class="card reports" aria-labelledby="reportHeading">
+    <h2 class="card-title" id="reportHeading">Focus reports</h2>
+    <div class="stats" id="reportStats"></div>
+    <div class="chart" id="reportChart" aria-label="Focus minutes over the last 7 days"></div>
+    <div class="legend-dots"><span>Minutes locked in per day</span></div>
+    <h3 class="section-title">What you focused on this week</h3>
+    <ul class="list" id="reportTop"></ul>
+    <h3 class="section-title">Recent sessions</h3>
+    <ul class="list" id="reportRecent"></ul>
+  </section>
+
 </main>
+
+<dialog id="reflectDialog" class="dialog" aria-labelledby="reflectHeading">
+  <h2 id="reflectHeading">Session complete</h2>
+  <p class="muted" id="reflectSummary"></p>
+  <label class="label">What did you accomplish?
+    <textarea class="field" id="reflectText" maxlength="1000" placeholder="Even a small win counts."></textarea>
+  </label>
+  <label class="check-row" id="reflectDoneRow" hidden>
+    <input type="checkbox" id="reflectDone" checked>
+    <span id="reflectDoneLabel">Mark the task as done</span>
+  </label>
+  <label class="check-row" id="reflectLogRow" hidden>
+    <input type="checkbox" id="reflectLog" checked>
+    <span id="reflectLogLabel">Add this to the project's progress log</span>
+  </label>
+  <div class="dialog-actions">
+    <button type="button" class="big-btn" id="reflectSave">Save session</button>
+    <button type="button" class="big-btn secondary" id="reflectSkip">Skip reflection</button>
+  </div>
+</dialog>
 
 <button type="button" class="spotify-toggle" id="spotifyToggle" aria-label="Open music player" aria-expanded="false" aria-controls="spotifyPlayer">
   <span class="mini-record" aria-hidden="true"></span>
@@ -145,6 +210,10 @@
 <script src="js/shared.js"></script>
 <script src="js/planner-core.js"></script>
 <script src="js/focus.js"></script>
+<script src="js/life-core.js"></script>
+<script src="js/data.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/lockin.js"></script>
 <script src="js/spotify-config.js"></script>
 <script src="js/spotify-core.js"></script>
 <script src="js/spotify.js"></script>
