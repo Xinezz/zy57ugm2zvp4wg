@@ -78,12 +78,37 @@
     $("journalStreak").textContent = streak ? `${streak}-day streak` : "Four quick questions";
   }
 
+  /* ---------- internship: live countdown tab ---------- */
+
+  // the dates are set in the planner's Settings (saved as "plannerPeriods")
+  const loadPeriods = () => PlannerCore.cleanPeriods(Store.read("plannerPeriods", null));
+  const pad2 = (n) => String(n).padStart(2, "0");
+
+  function tickLive() {
+    const box = $("liveCountdown");
+    const period = loadPeriods().find((p) => PlannerCore.periodEndTime(p) > Date.now());
+    if (!period) {
+      box.hidden = true;
+      return;
+    }
+    box.hidden = false;
+    const started = today >= period.start;
+    const target = started ? PlannerCore.periodEndTime(period) : new Date(`${period.start}T00:00:00`).getTime();
+    const t = PlannerCore.splitDuration(target - Date.now());
+    $("liveLabel").textContent = started ? `${period.label} ends in` : `${period.label} starts in`;
+    $("liveDays").textContent = t.days;
+    $("liveHours").textContent = pad2(t.hours);
+    $("liveMinutes").textContent = pad2(t.minutes);
+    $("liveSeconds").textContent = pad2(t.seconds);
+    box.title = `${period.label}: ${short(period.start)} to ${short(period.end)}, last day finishes at ${period.finish}`;
+  }
+
   /* ---------- countdowns ---------- */
 
   function renderCountdowns(d) {
     const list = d.countdowns.slice().sort((a, b) => (a.date < b.date ? -1 : 1));
     // special periods (e.g. the internship) count down in weekdays, not days
-    const periods = PlannerCore.PERIODS.map((p) => ({ p, c: PlannerCore.periodCountdown(p, today) }))
+    const periods = loadPeriods().map((p) => ({ p, c: PlannerCore.periodCountdown(p, today) }))
       .filter(({ c }) => c.phase !== "after")
       .map(({ p, c }) => h("a", { class: `countdown period-count ${p.className}`, href: "planner.html", title: `${c.done} of ${c.total} weekdays done` },
         h("strong", { class: "count-num" }, String(c.phase === "before" ? c.untilStart : c.left)),
@@ -193,6 +218,8 @@
   }
 
   greet();
+  tickLive();
+  setInterval(tickLive, 1000);
   render();
   LifeData.checkAchievements();
   // keep the greeting fresh, and pick up changes made in another tab

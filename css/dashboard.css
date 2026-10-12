@@ -203,3 +203,82 @@
 .period-progress > span {
   background: var(--intern);
 }
+
+/* live internship countdown tab (top of the home page) */
+.live-countdown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 16px;
+  padding: 8px 16px;
+  border: 2px solid var(--intern);
+  border-radius: 14px 5px 16px 5px;
+  background: color-mix(in srgb, var(--intern) 18%, #0a0a0a);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--intern) 35%, transparent);
+  color: inherit;
+  text-decoration: none;
+}
+
+.live-countdown[hidden] {
+  display: none;
+}
+
+.live-label {
+  color: #ff8fd8;
+  font-size: 1.1rem;
+}
+
+.live-units {
+  display: flex;
+  gap: 6px;
+}
+
+.live-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 48px;
+  padding: 2px 6px;
+  border: 1px solid color-mix(in srgb, var(--intern) 60%, transparent);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.live-unit strong {
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: var(--gold-light);
+  font-variant-numeric: tabular-nums;
+}
+
+.live-unit small {
+  color: var(--gold-dim);
+  font-size: 0.75rem;
+}
+
+.live-edit {
+  color: var(--gold-dim);
+  font-size: 0.85rem;
+  text-decoration: underline;
+}
+
+.live-countdown:hover .live-edit,
+.live-countdown:focus-visible .live-edit {
+  color: var(--gold-light);
+}
+
+@media (max-width: 600px) {
+  .live-countdown {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .live-unit {
+    min-width: 0;
+    flex: 1;
+  }
+}

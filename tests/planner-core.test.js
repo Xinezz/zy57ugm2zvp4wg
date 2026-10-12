@@ -170,4 +170,22 @@ test("special periods colour weekdays only and count weekdays left", () => {
   assert.equal(core.periodCountdown(period, "2026-10-17").phase, "after");
 });
 
+test("saved internship dates are validated and the end moment is exact", () => {
+  assert.equal(core.cleanPeriods(null)[0].end, core.PERIODS[0].end); // nothing saved: defaults
+  assert.deepEqual(core.cleanPeriods([]), []); // removed on purpose
+  const cleaned = core.cleanPeriods([
+    { label: "Intern", start: "2026-11-02", end: "2027-01-29", finish: "17:30" },
+    { label: "Backwards", start: "2027-01-01", end: "2026-01-01" },
+    { start: "nope", end: "2026-01-01" },
+  ]);
+  assert.equal(cleaned.length, 1);
+  assert.equal(cleaned[0].finish, "17:30");
+  assert.equal(core.cleanPeriods([{ start: "2026-11-02", end: "2026-11-03", finish: "25:00" }])[0].finish, "18:00");
+
+  const end = new Date(core.periodEndTime({ end: "2027-02-19", finish: "18:00" }));
+  assert.deepEqual([end.getFullYear(), end.getMonth(), end.getDate(), end.getHours(), end.getMinutes()], [2027, 1, 19, 18, 0]);
+  assert.deepEqual(core.splitDuration(((2 * 24 + 3) * 3600 + 4 * 60 + 5) * 1000), { days: 2, hours: 3, minutes: 4, seconds: 5 });
+  assert.deepEqual(core.splitDuration(-5000), { days: 0, hours: 0, minutes: 0, seconds: 0 });
+});
+
 console.log(`\n${passed} passed`);

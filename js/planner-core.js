@@ -211,9 +211,45 @@
   /* ---------- Special periods (e.g. an internship) ---------- */
 
   // Date ranges whose weekdays get their own calendar color and a countdown.
+  // These are the defaults; the user's own dates are saved under "plannerPeriods".
   const PERIODS = [
-    { start: "2026-10-05", end: "2027-02-19", className: "intern", label: "Internship" },
+    { start: "2026-10-05", end: "2027-02-19", finish: "18:00", className: "intern", label: "Internship" },
   ];
+
+  const KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+  /** Saved periods made safe to use: nothing saved yet means the defaults, bad entries are dropped. */
+  function cleanPeriods(saved) {
+    if (!Array.isArray(saved)) return PERIODS.map((p) => ({ ...p }));
+    return saved
+      .filter((p) => p && KEY_RE.test(p.start) && KEY_RE.test(p.end) && p.start <= p.end)
+      .map((p) => ({
+        start: p.start,
+        end: p.end,
+        finish: TIME_RE.test(p.finish) ? p.finish : "18:00",
+        className: "intern",
+        label: String(p.label || "Internship").slice(0, 40),
+      }));
+  }
+
+  /** The exact moment a period ends: its last day at the finishing time, in local time. */
+  function periodEndTime(period) {
+    const { y, m, d } = parseKey(period.end);
+    const [hh, mm] = (period.finish || "18:00").split(":").map(Number);
+    return new Date(y, m - 1, d, hh, mm, 0, 0).getTime();
+  }
+
+  /** Milliseconds left split into days, hours, minutes and seconds (never negative). */
+  function splitDuration(ms) {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    return {
+      days: Math.floor(total / 86400),
+      hours: Math.floor((total % 86400) / 3600),
+      minutes: Math.floor((total % 3600) / 60),
+      seconds: total % 60,
+    };
+  }
 
   /** The period a weekday falls in, or null (weekends never belong to a period). */
   function periodFor(key, periods = PERIODS) {
@@ -245,7 +281,7 @@
   }
 
   const api = {
-    PERIODS, periodFor, weekdaysBetween, periodCountdown,
+    PERIODS, cleanPeriods, periodEndTime, splitDuration, periodFor, weekdaysBetween, periodCountdown,
     FREQUENCIES, dateKey, parseKey, weekdayOf, addDays, isWeekendKey,
     occursOn, itemsFor, dayStatus, addTask, setDone, removeItem, stopRepeating,
     pruneDay, ensureDay, search, agenda,

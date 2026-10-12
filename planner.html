@@ -175,6 +175,22 @@
     </div>
   </section>
 
+  <section class="set-group" id="periodGroup">
+    <h3>Internship</h3>
+    <p class="set-note">Weekdays between these dates turn magenta, and the planner and home page count down to the end.</p>
+    <div class="period-form">
+      <label><span>Name</span><input type="text" class="field" id="periodLabel" maxlength="40" placeholder="Internship"></label>
+      <label><span>First day</span><input type="date" class="field" id="periodStart"></label>
+      <label><span>Last day</span><input type="date" class="field" id="periodEnd"></label>
+      <label><span>Last day finishes at</span><input type="time" class="field" id="periodFinish" value="18:00"></label>
+    </div>
+    <div class="pick-row">
+      <button type="button" id="periodSave">Save dates</button>
+      <button type="button" id="periodRemove">Remove internship</button>
+    </div>
+    <div class="set-status" id="periodStatus" aria-live="polite"></div>
+  </section>
+
   <section class="set-group">
     <h3>Sounds</h3>
     <label class="switch-row"><span>Soft button sounds (planner and Focus Mode)</span>

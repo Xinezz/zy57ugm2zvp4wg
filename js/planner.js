@@ -4,7 +4,7 @@
 (() => {
   "use strict";
 
-  const { dateKey, parseKey, itemsFor, dayStatus, isWeekendKey, periodFor, periodCountdown, PERIODS } = PlannerCore;
+  const { dateKey, parseKey, itemsFor, dayStatus, isWeekendKey, periodFor, periodCountdown, cleanPeriods } = PlannerCore;
 
   const KEYS = {
     days: "plannerData",
@@ -82,17 +82,30 @@
 
   /* ---------- Internship countdown (weekdays left) ---------- */
 
+  const PERIODS_KEY = "plannerPeriods";
+  let periods = cleanPeriods(Store.read(PERIODS_KEY, null));
   let countdownKey = null;
 
-  function renderPeriodCountdown() {
+  function renderPeriodCountdown(force) {
     const key = todayKey();
-    if (key === countdownKey) return; // only changes when the date does
+    if (key === countdownKey && !force) return; // only changes when the date does
     countdownKey = key;
     const box = $("periodCountdown");
     box.replaceChildren();
-    PERIODS.forEach((period) => {
+    if (!periods.length) {
+      const add = document.createElement("button");
+      add.type = "button";
+      add.className = "period-add";
+      add.textContent = "+ Set internship dates";
+      add.addEventListener("click", openPeriodSettings);
+      box.append(add);
+      return;
+    }
+    periods.forEach((period) => {
       const c = periodCountdown(period, key);
-      const pill = document.createElement("div");
+      const pill = document.createElement("button");
+      pill.type = "button";
+      pill.addEventListener("click", openPeriodSettings);
       pill.className = `period-pill ${period.className}`;
       const big = document.createElement("strong");
       const text = document.createElement("span");
@@ -115,7 +128,7 @@
         bar.title = `${c.done} of ${c.total} weekdays done`;
         pill.append(bar);
       }
-      pill.title = `${period.label}: ${shortDate(period.start)} to ${ends}, ${c.total} weekdays in all`;
+      pill.title = `${period.label}: ${shortDate(period.start)} to ${ends}, ${c.total} weekdays in all. Click to change the dates.`;
       box.append(pill);
     });
   }
@@ -148,7 +161,7 @@
       const cell = document.createElement("button");
       cell.type = "button";
       cell.dataset.key = key;
-      const period = periodFor(key);
+      const period = periodFor(key, periods);
       cell.className = `day-cell ${status || (isWeekendKey(key) ? "weekend" : period ? period.className : "weekday")}`;
       if (key === today) cell.classList.add("today");
       if (key === selectedKey) cell.classList.add("selected");
@@ -648,13 +661,74 @@
     box.hidden = !text;
   }
 
-  $("settingsBtn").addEventListener("click", () => {
+  function openSettings() {
     settingsMessage("");
     $("backupStatus").textContent = "";
     $("optUiSound").checked = UiSound.isEnabled();
     refreshAccentUI();
     refreshSettingsUI();
+    fillPeriodForm();
     $("settingsDialog").showModal();
+  }
+
+  $("settingsBtn").addEventListener("click", openSettings);
+
+  /* ---------- Internship dates (Settings) ---------- */
+
+  function fillPeriodForm() {
+    const p = periods[0];
+    $("periodLabel").value = p ? p.label : "Internship";
+    $("periodStart").value = p ? p.start : "";
+    $("periodEnd").value = p ? p.end : "";
+    $("periodFinish").value = p ? p.finish : "18:00";
+    $("periodStatus").textContent = "";
+    $("periodRemove").hidden = !p;
+  }
+
+  function openPeriodSettings() {
+    openSettings();
+    $("periodGroup").scrollIntoView({ block: "start" });
+    $("periodStart").focus();
+  }
+
+  function savePeriods(next, message) {
+    periods = cleanPeriods(next);
+    if (!Store.write(PERIODS_KEY, periods)) {
+      $("periodStatus").textContent = "Couldn't save. Your browser storage may be full.";
+      return;
+    }
+    $("periodStatus").textContent = message;
+    $("periodRemove").hidden = !periods.length;
+    renderPeriodCountdown(true);
+    renderCalendar();
+  }
+
+  $("periodSave").addEventListener("click", () => {
+    const start = $("periodStart").value;
+    const end = $("periodEnd").value;
+    if (!start || !end) {
+      $("periodStatus").textContent = "Pick both the first and the last day.";
+      return;
+    }
+    if (end < start) {
+      $("periodStatus").textContent = "The last day can't be before the first day.";
+      return;
+    }
+    savePeriods([{ label: $("periodLabel").value.trim() || "Internship", start, end, finish: $("periodFinish").value || "18:00" }], "Saved. The calendar and countdowns are updated.");
+  });
+
+  $("periodRemove").addEventListener("click", (event) => {
+    const button = event.currentTarget;
+    if (!button.classList.contains("armed")) {
+      button.classList.add("armed");
+      button.textContent = "Click again to remove";
+      setTimeout(() => { button.classList.remove("armed"); button.textContent = "Remove internship"; }, 3000);
+      return;
+    }
+    button.classList.remove("armed");
+    button.textContent = "Remove internship";
+    savePeriods([], "Removed. Weekdays are back to their normal color.");
+    fillPeriodForm();
   });
 
   $("optCalOn").addEventListener("change", (event) => {
@@ -874,6 +948,7 @@
 
   updateHeader();
   setInterval(updateHeader, 1000);
+  if (location.hash === "#internship") openPeriodSettings();
   applyNotesBg();
   selectDay(todayKey());
 })();
