@@ -96,6 +96,10 @@
     const target = started ? PlannerCore.periodEndTime(period) : PlannerCore.sgTime(period.start);
     const t = PlannerCore.splitDuration(target - Date.now());
     $("liveLabel").textContent = started ? `${period.label} ends in` : `${period.label} starts in`;
+    const [hh, mm] = (started ? period.finish : "00:00").split(":").map(Number);
+    const clock = `${hh % 12 || 12}:${String(mm).padStart(2, "0")} ${hh < 12 ? "am" : "pm"}`;
+    const day = LifeData.prettyDate(started ? period.end : period.start, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+    $("liveTarget").textContent = `until ${day}, ${clock} SGT`;
     $("liveDays").textContent = t.days;
     $("liveHours").textContent = pad2(t.hours);
     $("liveMinutes").textContent = pad2(t.minutes);

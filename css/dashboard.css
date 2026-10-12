@@ -260,6 +260,11 @@
   font-size: 0.75rem;
 }
 
+.live-target {
+  color: var(--gold-light);
+  font-size: 0.9rem;
+}
+
 .live-edit {
   color: var(--gold-dim);
   font-size: 0.85rem;
