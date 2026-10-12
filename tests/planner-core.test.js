@@ -182,10 +182,19 @@ test("saved internship dates are validated and the end moment is exact", () => {
   assert.equal(cleaned[0].finish, "17:30");
   assert.equal(core.cleanPeriods([{ start: "2026-11-02", end: "2026-11-03", finish: "25:00" }])[0].finish, "18:00");
 
-  const end = new Date(core.periodEndTime({ end: "2027-02-19", finish: "18:00" }));
-  assert.deepEqual([end.getFullYear(), end.getMonth(), end.getDate(), end.getHours(), end.getMinutes()], [2027, 1, 19, 18, 0]);
+  const end = core.sgNow(core.periodEndTime({ end: "2027-02-19", finish: "18:00" }));
+  assert.deepEqual([end.year, end.month, end.day, end.hours, end.minutes], [2027, 1, 19, 18, 0]);
   assert.deepEqual(core.splitDuration(((2 * 24 + 3) * 3600 + 4 * 60 + 5) * 1000), { days: 2, hours: 3, minutes: 4, seconds: 5 });
   assert.deepEqual(core.splitDuration(-5000), { days: 0, hours: 0, minutes: 0, seconds: 0 });
+});
+
+test("the clock follows Singapore time whatever the device's time zone", () => {
+  const ms = Date.UTC(2026, 9, 11, 23, 30, 15); // 11 Oct 23:30:15 UTC = 12 Oct 07:30:15 in Singapore
+  assert.deepEqual(core.sgNow(ms), { year: 2026, month: 9, day: 12, hours: 7, minutes: 30, seconds: 15, weekday: 1 });
+  assert.equal(core.sgTodayKey(ms), "2026-10-12");
+  assert.equal(core.sgTodayKey(Date.UTC(2026, 11, 31, 16, 0)), "2027-01-01"); // midnight new year in Singapore
+  assert.equal(core.sgTime("2026-10-12", "07:30"), Date.UTC(2026, 9, 11, 23, 30));
+  assert.equal(core.periodEndTime({ end: "2027-02-19", finish: "18:00" }), Date.UTC(2027, 1, 19, 10, 0));
 });
 
 console.log(`\n${passed} passed`);

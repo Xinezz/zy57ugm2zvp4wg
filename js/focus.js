@@ -27,8 +27,7 @@
   let ticker = null;
 
   function todayKey() {
-    const d = new Date();
-    return PlannerCore.dateKey(d.getFullYear(), d.getMonth(), d.getDate());
+    return PlannerCore.sgTodayKey(); // Singapore time
   }
 
   function clampMinutes(value, min, max) {

@@ -33,13 +33,12 @@
   const days = savedDays && typeof savedDays === "object" && !Array.isArray(savedDays) ? savedDays : {};
   const rules = Array.isArray(savedRules) ? savedRules : [];
 
-  const now = new Date();
-  const view = { year: now.getFullYear(), month: now.getMonth() };
+  const now = PlannerCore.sgNow(); // the site runs on Singapore time
+  const view = { year: now.year, month: now.month };
   let selectedKey = null;
 
   function todayKey() {
-    const d = new Date();
-    return dateKey(d.getFullYear(), d.getMonth(), d.getDate());
+    return PlannerCore.sgTodayKey();
   }
 
   function longDate(key) {
@@ -66,15 +65,16 @@
   /* ---------- Header clock ---------- */
 
   function updateHeader() {
-    const date = new Date();
-    const hour = date.getHours();
+    const sg = PlannerCore.sgNow();
+    const hour = sg.hours;
     const header = $("greetingHeader");
     $("greetingText").textContent = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
-    $("dateBox").textContent = date.toLocaleDateString();
-    $("timeBox").textContent = date.toLocaleTimeString();
-    $("dayBox").textContent = DAY_NAMES[date.getDay()];
+    $("dateBox").textContent = `${sg.day}/${sg.month + 1}/${sg.year}`;
+    const h12 = sg.hours % 12 || 12;
+    $("timeBox").textContent = `${h12}:${String(sg.minutes).padStart(2, "0")}:${String(sg.seconds).padStart(2, "0")} ${sg.hours < 12 ? "am" : "pm"}`;
+    $("dayBox").textContent = DAY_NAMES[sg.weekday];
 
-    const weekend = date.getDay() === 0 || date.getDay() === 6;
+    const weekend = sg.weekday === 0 || sg.weekday === 6;
     header.classList.toggle("is-weekend", weekend);
     header.classList.toggle("is-weekday", !weekend);
     renderPeriodCountdown();

@@ -67,7 +67,15 @@
     return out;
   }
 
-  const keyOfIso = (iso) => (iso ? String(iso).slice(0, 10) : "");
+  /** The Singapore date ("YYYY-MM-DD") of a saved ISO timestamp. Plain date keys pass through. */
+  function keyOfIso(iso) {
+    if (!iso) return "";
+    const text = String(iso);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+    const ms = Date.parse(text);
+    if (Number.isNaN(ms)) return text.slice(0, 10);
+    return new Date(ms + 8 * 60 * 60 * 1000).toISOString().slice(0, 10); // Singapore is UTC+8
+  }
 
   /* ---------- tasks ---------- */
 

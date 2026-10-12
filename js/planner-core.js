@@ -208,6 +208,40 @@
     return { overdue, upcoming };
   }
 
+  /* ---------- Singapore time ----------
+     The whole site follows Singapore time (UTC+8, no daylight saving), whatever time zone
+     the device is set to. Shifting a timestamp by 8 hours and reading its UTC fields gives
+     the wall clock in Singapore. */
+
+  const SG_OFFSET_MS = 8 * 60 * 60 * 1000;
+
+  /** The Singapore date and time at `ms` (default now). month is 0-11, weekday 0 = Sunday. */
+  function sgNow(ms = Date.now()) {
+    const d = new Date(ms + SG_OFFSET_MS);
+    return {
+      year: d.getUTCFullYear(),
+      month: d.getUTCMonth(),
+      day: d.getUTCDate(),
+      hours: d.getUTCHours(),
+      minutes: d.getUTCMinutes(),
+      seconds: d.getUTCSeconds(),
+      weekday: d.getUTCDay(),
+    };
+  }
+
+  /** Today's date key ("YYYY-MM-DD") in Singapore. */
+  function sgTodayKey(ms = Date.now()) {
+    const t = sgNow(ms);
+    return dateKey(t.year, t.month, t.day);
+  }
+
+  /** The timestamp of a Singapore date and "HH:MM" time. */
+  function sgTime(key, hhmm = "00:00") {
+    const { y, m, d } = parseKey(key);
+    const [hh, mm] = hhmm.split(":").map(Number);
+    return Date.UTC(y, m - 1, d, hh, mm) - SG_OFFSET_MS;
+  }
+
   /* ---------- Special periods (e.g. an internship) ---------- */
 
   // Date ranges whose weekdays get their own calendar color and a countdown.
@@ -233,11 +267,9 @@
       }));
   }
 
-  /** The exact moment a period ends: its last day at the finishing time, in local time. */
+  /** The exact moment a period ends: its last day at the finishing time, Singapore time. */
   function periodEndTime(period) {
-    const { y, m, d } = parseKey(period.end);
-    const [hh, mm] = (period.finish || "18:00").split(":").map(Number);
-    return new Date(y, m - 1, d, hh, mm, 0, 0).getTime();
+    return sgTime(period.end, period.finish || "18:00");
   }
 
   /** Milliseconds left split into days, hours, minutes and seconds (never negative). */
@@ -281,6 +313,7 @@
   }
 
   const api = {
+    sgNow, sgTodayKey, sgTime,
     PERIODS, cleanPeriods, periodEndTime, splitDuration, periodFor, weekdaysBetween, periodCountdown,
     FREQUENCIES, dateKey, parseKey, weekdayOf, addDays, isWeekendKey,
     occursOn, itemsFor, dayStatus, addTask, setDone, removeItem, stopRepeating,

@@ -11,7 +11,7 @@
   const short = (key) => LifeData.prettyDate(key, { weekday: "short", day: "numeric", month: "short" });
 
   function greet() {
-    const hour = new Date().getHours();
+    const hour = PlannerCore.sgNow().hours;
     $("greeting").textContent = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
     $("todayText").textContent = LifeData.prettyDate(today, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   }
@@ -73,7 +73,7 @@
     $("levelText").textContent = `${xp.needed - xp.current} XP to level ${xp.level + 1}`;
 
     const written = LifeCore.entryFilled(d.journal[today]);
-    $("journalState").textContent = written ? "Written ✓" : new Date().getHours() >= 18 ? "Time to reflect" : "Not written yet";
+    $("journalState").textContent = written ? "Written ✓" : PlannerCore.sgNow().hours >= 18 ? "Time to reflect" : "Not written yet";
     const streak = LifeCore.journalStreak(d.journal, today);
     $("journalStreak").textContent = streak ? `${streak}-day streak` : "Four quick questions";
   }
@@ -93,7 +93,7 @@
     }
     box.hidden = false;
     const started = today >= period.start;
-    const target = started ? PlannerCore.periodEndTime(period) : new Date(`${period.start}T00:00:00`).getTime();
+    const target = started ? PlannerCore.periodEndTime(period) : PlannerCore.sgTime(period.start);
     const t = PlannerCore.splitDuration(target - Date.now());
     $("liveLabel").textContent = started ? `${period.label} ends in` : `${period.label} starts in`;
     $("liveDays").textContent = t.days;

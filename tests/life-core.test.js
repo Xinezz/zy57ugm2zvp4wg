@@ -154,4 +154,13 @@ test("timeline gathers events from everywhere, newest first, and the time machin
   assert.equal(L.snapshot(d, "2026-09-10").projectsActive.length, 1);
 });
 
+test("timestamps are dated in Singapore time, not UTC", () => {
+  // 7:30am in Singapore is still the previous day in UTC
+  assert.equal(L.keyOfIso("2026-10-11T23:30:00.000Z"), "2026-10-12");
+  assert.equal(L.keyOfIso("2026-10-11T15:59:59.000Z"), "2026-10-11");
+  assert.equal(L.keyOfIso("2026-10-11T16:00:00.000Z"), "2026-10-12");
+  assert.equal(L.keyOfIso("2026-10-11"), "2026-10-11");
+  assert.equal(L.keyOfIso(""), "");
+});
+
 console.log(`\n${passed} passed`);

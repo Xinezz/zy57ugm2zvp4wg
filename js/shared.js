@@ -137,7 +137,7 @@ function downloadBackup() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `planner-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  link.download = `planner-backup-${new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10)}.json`; // Singapore date
   document.body.appendChild(link);
   link.click();
   link.remove();
