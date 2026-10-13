@@ -13,16 +13,17 @@
 
   const clientId = typeof SPOTIFY_CLIENT_ID !== "undefined" ? (SPOTIFY_CLIENT_ID || "").trim() : "";
   const redirectUri = SpotifyCore.redirectUriFor(location.href);
-  const $ = (id) => document.getElementById(id);
-  const player = $("spotifyPlayer");
-  const toggle = $("spotifyToggle");
+  const player = document.getElementById("spotifyPlayer");
+  const toggle = document.getElementById("spotifyToggle");
   if (!player || !toggle) return;
+  // the player's parts move into the mini window when popped out, so look inside the player first
+  const $ = (id) => player.querySelector(`#${id}`) || document.getElementById(id);
   const home = player.parentNode;
 
   let auth = readJson(KEYS.auth);
   let track = null;
   let polledAt = 0;
-  let pollTimer = null;
+  let pollTimer = null; // { win, id }: timers run in the mini window while it is open (it isn't throttled)
   let pipWindow = null;
   let message = "";
 
@@ -100,7 +101,7 @@
 
     $("spConnectRow").hidden = !clientId || !!auth;
     $("spDisconnect").hidden = !auth;
-    $("spotifyPopOut").hidden = !("documentPictureInPicture" in window) || !!pipWindow;
+    $("spotifyPopOut").hidden = !("documentPictureInPicture" in window) || !!pipWindow || !auth;
     $("spMessage").textContent = message;
     $("spMessage").hidden = !message;
     toggle.setAttribute("aria-label", playing ? `Music player: playing ${track.title}` : "Open music player");
@@ -225,8 +226,9 @@
   /* ---------- reading and controlling playback ---------- */
 
   async function poll() {
-    clearTimeout(pollTimer);
-    if (auth && !document.hidden) {
+    if (pollTimer) pollTimer.win.clearTimeout(pollTimer.id);
+    pollTimer = null;
+    if (auth && (!document.hidden || pipWindow)) {
       const res = await call("GET", "/me/player?additional_types=episode");
       if (res.status === 200) {
         track = SpotifyCore.parsePlayer(res.body);
@@ -239,7 +241,10 @@
       }
       render();
     }
-    if (auth) pollTimer = setTimeout(poll, isOpen() ? POLL_OPEN_MS : POLL_CLOSED_MS);
+    if (auth) {
+      const win = pipWindow || window;
+      pollTimer = { win, id: win.setTimeout(poll, isOpen() ? POLL_OPEN_MS : POLL_CLOSED_MS) };
+    }
   }
 
   const ACTIONS = {
@@ -293,7 +298,7 @@
   async function popOut() {
     if (!("documentPictureInPicture" in window) || pipWindow) return;
     try {
-      pipWindow = await window.documentPictureInPicture.requestWindow({ width: 320, height: 470 });
+      pipWindow = await window.documentPictureInPicture.requestWindow({ width: 360, height: 170 });
     } catch {
       return;
     }
@@ -311,15 +316,29 @@
     doc.body.appendChild(player);
     toggle.hidden = true;
     render();
+    poll();
+    // the main page's timers slow right down once Chrome is minimised, so the mini window drives the progress bar
+    const ticker = pipWindow.setInterval(() => { if (track && track.isPlaying) drawProgress(); }, 500);
 
     pipWindow.addEventListener("pagehide", () => {
+      pipWindow.clearInterval(ticker);
+      if (pollTimer && pollTimer.win === pipWindow) pollTimer = null;
       player.classList.remove("in-pip");
       home.appendChild(player);
       pipWindow = null;
       toggle.hidden = false;
       render();
+      poll();
     });
   }
+
+  // Chrome can open the mini player by itself when you switch away from the tab, but only while
+  // the page is playing sound (e.g. an ambient sound in the Lock-In Room). Ignored elsewhere.
+  try {
+    if ("documentPictureInPicture" in window && navigator.mediaSession) {
+      navigator.mediaSession.setActionHandler("enterpictureinpicture", () => { if (auth) popOut(); });
+    }
+  } catch {}
 
   /* ---------- dragging the player by its "Now playing" bar ---------- */
 

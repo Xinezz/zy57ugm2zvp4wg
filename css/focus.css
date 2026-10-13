@@ -302,7 +302,25 @@
 }
 
 .spotify-player.in-pip .sp-head {
-  cursor: default;
+  display: none; /* the mini window has its own title bar and close button */
+}
+
+.sp-mini-btn {
+  padding: 2px 10px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--gold-light);
+  font: inherit;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sp-mini-btn:hover,
+.sp-mini-btn:focus-visible {
+  background: color-mix(in srgb, var(--gold) 18%, transparent);
+  border-color: var(--gold);
 }
 
 @media (max-width: 480px) {
@@ -316,6 +334,7 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--gold);
+  white-space: nowrap;
 }
 
 .sp-head-btns {
@@ -596,13 +615,51 @@
 
 .spotify-player.in-pip {
   position: static;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "deck song"
+    "deck artist"
+    "deck controls"
+    "bar bar"
+    "times times"
+    "msg msg";
+  column-gap: 12px;
+  align-items: center;
   width: auto;
   max-height: none;
-  margin: 8px;
+  margin: 0;
+  padding: 10px 12px 6px;
+  border-radius: 0;
   animation: none;
   background: #14110a;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+}
+
+.spotify-player.in-pip .turntable {
+  grid-area: deck;
+  zoom: 0.42; /* the full record player, shrunk to fit beside the song */
+  margin: 0;
+}
+
+.spotify-player.in-pip .sp-song { grid-area: song; text-align: left; margin: 0; }
+.spotify-player.in-pip .sp-artist { grid-area: artist; text-align: left; margin: 0; }
+.spotify-player.in-pip .sp-controls { grid-area: controls; justify-content: flex-start; margin: 4px 0 0; }
+.spotify-player.in-pip .sp-progress { grid-area: bar; margin-top: 8px; }
+.spotify-player.in-pip .sp-times { grid-area: times; }
+.spotify-player.in-pip .sp-message { grid-area: msg; }
+.spotify-player.in-pip .sp-connect,
+.spotify-player.in-pip .sp-link { display: none; }
+
+.spotify-player.in-pip .sp-btn {
+  width: 34px;
+  height: 34px;
+}
+
+.spotify-player.in-pip .sp-play {
+  width: 40px;
+  height: 40px;
 }
 
 /* browsers without blur support get a darker, still slightly see-through card */
