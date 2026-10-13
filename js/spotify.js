@@ -295,10 +295,12 @@
     try { localStorage.removeItem(KEYS.open); } catch {}
   }
 
+  const PIP_SIZE = 260; // the mini window is a square this many pixels wide and tall
+
   async function popOut() {
     if (!("documentPictureInPicture" in window) || pipWindow) return;
     try {
-      pipWindow = await window.documentPictureInPicture.requestWindow({ width: 360, height: 170 });
+      pipWindow = await window.documentPictureInPicture.requestWindow({ width: PIP_SIZE, height: PIP_SIZE });
     } catch {
       return;
     }
@@ -319,9 +321,14 @@
     poll();
     // the main page's timers slow right down once Chrome is minimised, so the mini window drives the progress bar
     const ticker = pipWindow.setInterval(() => { if (track && track.isPlaying) drawProgress(); }, 500);
+    // Chrome lets people resize the window, so scale the square player to fit instead of stretching it
+    const fit = () => { player.style.zoom = String(Math.min(pipWindow.innerWidth, pipWindow.innerHeight) / PIP_SIZE); };
+    fit();
+    pipWindow.addEventListener("resize", fit);
 
     pipWindow.addEventListener("pagehide", () => {
       pipWindow.clearInterval(ticker);
+      player.style.zoom = "";
       if (pollTimer && pollTimer.win === pipWindow) pollTimer = null;
       player.classList.remove("in-pip");
       home.appendChild(player);
