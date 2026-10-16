@@ -22,6 +22,12 @@
 </head>
 <body class="phase-focus">
 
+<div class="scene-layer" aria-hidden="true">
+  <div class="scene-frame" id="musicFrame"></div>
+  <div class="scene-frame" id="placeFrame"></div>
+  <div class="scene-shade"></div>
+</div>
+
 <div class="loader" id="loader" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
   <img class="loader-icon" src="assets/notes-icon.gif" alt="">
   <div class="loader-title">Loading</div>
@@ -65,6 +71,10 @@
     </div>
 
     <div class="lock-note" id="lockNote" hidden>Locked in. Pause to leave or change settings.</div>
+    <div class="room-row">
+      <span class="room-playing" id="roomPlaying"></span>
+      <button type="button" class="chip room-btn" id="roomBtn" title="Hide everything but the timer and the scene">&#x26F6; Room view</button>
+    </div>
   </section>
 
   <div class="lockin-grid">
@@ -87,15 +97,41 @@
       </div>
       <ul class="list park-list" id="parkList"></ul>
     </section>
-
-    <section class="card" aria-labelledby="ambientHeading">
-      <h2 class="card-title" id="ambientHeading">Ambient sound</h2>
-      <div class="ambient-btns" id="ambientBtns" role="group" aria-label="Ambient sounds"></div>
-      <label class="range-row ambient-volume"><span>Volume</span>
-        <input type="range" id="ambientVolume" min="0" max="100" value="40">
-      </label>
-    </section>
   </div>
+
+  <section class="card soundscape" id="soundscape" aria-labelledby="soundHeading">
+    <h2 class="card-title" id="soundHeading">
+      <span>Soundscape</span>
+      <button type="button" class="chip" id="soundToggle" hidden>&#9654; Play</button>
+    </h2>
+    <p class="vibe-prompt" id="vibePrompt">What helps you focus? Pick a music vibe, a cozy place, or both. They'll play whenever you lock in.</p>
+
+    <div class="sound-row">
+      <h3 class="section-title">Music</h3>
+      <label class="sound-vol"><span>Volume</span><input type="range" id="musicVol" min="0" max="100" aria-label="Music volume"></label>
+    </div>
+    <div class="vibe-grid" id="musicGrid" role="group" aria-label="Music"></div>
+
+    <div class="sound-row">
+      <h3 class="section-title">Place</h3>
+      <label class="sound-vol"><span>Volume</span><input type="range" id="placeVol" min="0" max="100" aria-label="Place volume"></label>
+    </div>
+    <div class="vibe-grid" id="placeGrid" role="group" aria-label="Place"></div>
+
+    <div class="sound-opts">
+      <label class="check-row"><input type="checkbox" id="withTimer"> <span>Play when I start the timer, pause when I stop</span></label>
+      <label class="check-row"><input type="checkbox" id="sceneOn"> <span>Show the scene behind the timer</span></label>
+    </div>
+    <details class="custom-link">
+      <summary>Play your own YouTube link</summary>
+      <div class="form-row">
+        <input type="url" class="field" id="customLink" placeholder="https://www.youtube.com/watch?v=..." aria-label="YouTube link">
+        <button type="button" class="chip" id="customPlay">Play</button>
+      </div>
+    </details>
+    <p class="small-note" id="nowPlaying" aria-live="polite"></p>
+    <p class="small-note muted">Music and places stream from YouTube (Lofi Girl, Chillhop and ambience channels), so they need internet. Brown noise works offline.</p>
+  </section>
 
   <section class="settings-panel" id="settingsPanel" aria-label="Timer settings">
     <h2>Timer settings</h2>
@@ -216,6 +252,7 @@
 <script src="js/nav.js"></script>
 <script src="js/reminders.js"></script>
 <script src="js/lockin.js"></script>
+<script src="js/soundscape.js"></script>
 <script src="js/spotify-config.js"></script>
 <script src="js/spotify-core.js"></script>
 <script src="js/spotify.js"></script>

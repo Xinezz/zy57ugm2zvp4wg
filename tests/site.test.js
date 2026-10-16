@@ -57,7 +57,8 @@ test("every page loads its own scripts and the theme script", () => {
 test("scripts only look up element ids that exist in their page", () => {
   const checks = [
     ["index.html", "js/dashboard.js"], ["planner.html", "js/planner.js"], ["focus.html", "js/focus.js"],
-    ["focus.html", "js/lockin.js"], ["workshop.html", "js/workshop.js"], ["journal.html", "js/journal.js"],
+    ["focus.html", "js/lockin.js"],
+    ["focus.html", "js/soundscape.js"], ["workshop.html", "js/workshop.js"], ["journal.html", "js/journal.js"],
     ["vault.html", "js/vault.js"], ["achievements.html", "js/achievements.js"], ["timeline.html", "js/timeline.js"],
     ["museum.html", "js/museum.js"],
     ["me.html", "js/me.js"],

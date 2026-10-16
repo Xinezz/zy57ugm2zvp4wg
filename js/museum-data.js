@@ -245,6 +245,17 @@ const UPDATE_SEEDS = [
     glyph: "5",
     bg: "linear-gradient(135deg, #14110a, #d4af37, #c2188f)",
   },
+  {
+    id: "up-23-soundscape",
+    date: "2026-10-17",
+    title: "The Cozy Room",
+    year: "Oct 2026",
+    medium: "Soundscape",
+    description: "The generated ambient sounds were replaced by real ones: Lofi Girl and Chillhop radio in seven vibes, and real recordings of rain, a coffee shop, a fireplace, a library, a forest, the ocean, a storm and a night train. Mix music with a place, and let the scene fill the room behind the timer in Room view.",
+    link: "focus.html",
+    glyph: "♫",
+    bg: "linear-gradient(135deg, #1b1430, #d4af37, #2b5876)",
+  },
 ];
 
 const WINGS = {

@@ -723,26 +723,6 @@
   font-size: 0.85rem;
 }
 
-.ambient-btns {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.ambient-btn[aria-pressed="true"] {
-  background: var(--gold);
-  color: #0a0a0a;
-}
-
-.ambient-volume {
-  margin-top: 10px;
-}
-
-.ambient-volume input {
-  flex: 1;
-  accent-color: var(--gold);
-}
-
 .custom-presets {
   display: contents;
 }
@@ -835,3 +815,262 @@
   0%, 100% { box-shadow: 0 0 14px rgba(31, 165, 173, 0.3); }
   50% { box-shadow: 0 0 46px rgba(31, 165, 173, 0.6), inset 0 0 40px rgba(31, 165, 173, 0.14); }
 }
+
+/* ==========================================================
+   Soundscape: real lofi radio and real cozy-place recordings
+   ========================================================== */
+
+.soundscape {
+  text-align: left;
+  scroll-margin-top: 80px;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+.soundscape.is-nudged {
+  border-color: var(--gold-light);
+  box-shadow: 0 0 34px color-mix(in srgb, var(--gold) 60%, transparent);
+}
+
+.vibe-prompt {
+  margin: 0 0 6px;
+  padding: 8px 12px;
+  border: 2px dashed color-mix(in srgb, var(--gold) 50%, transparent);
+  border-radius: var(--wobble-sm);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+}
+
+.sound-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.sound-vol {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gold-dim);
+  font-size: 0.9rem;
+}
+
+.sound-vol input {
+  width: 140px;
+  accent-color: var(--gold);
+}
+
+.vibe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 8px;
+}
+
+.vibe {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  min-height: 74px;
+  padding: 8px 10px;
+  border: 2px solid color-mix(in srgb, var(--gold) 30%, transparent);
+  border-radius: var(--wobble-sm);
+  background: var(--field-bg);
+  color: var(--cream);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.12s;
+}
+
+.vibe:hover,
+.vibe:focus-visible {
+  border-color: var(--gold);
+}
+
+.vibe:active {
+  transform: scale(0.97);
+}
+
+.vibe.is-chosen {
+  border-color: var(--gold-light);
+  background: color-mix(in srgb, var(--gold) 16%, var(--field-bg));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--gold) 35%, transparent);
+}
+
+.vibe-emoji {
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.vibe-name {
+  line-height: 1.15;
+  color: var(--gold-light);
+}
+
+.vibe-sub {
+  font-size: 0.8rem;
+  color: var(--gold-dim);
+}
+
+/* little bouncing bars on whatever is playing */
+.vibe-eq {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+
+.vibe-eq i {
+  width: 3px;
+  height: 40%;
+  border-radius: 1px;
+  background: var(--gold-light);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vibe-eq i { animation: eq 0.9s ease-in-out infinite; }
+  .vibe-eq i:nth-child(2) { animation-delay: 0.2s; }
+  .vibe-eq i:nth-child(3) { animation-delay: 0.45s; }
+}
+
+@keyframes eq {
+  0%, 100% { height: 30%; }
+  50% { height: 100%; }
+}
+
+.sound-opts {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.custom-link {
+  margin-top: 10px;
+}
+
+.custom-link summary {
+  color: var(--gold);
+  cursor: pointer;
+}
+
+.custom-link .form-row {
+  margin-top: 6px;
+}
+
+/* ---------- the scene: the video fills the room behind the timer ---------- */
+.scene-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scene-frame {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+body.scene-on .scene-frame.is-shown {
+  opacity: 1;
+}
+
+/* cover the screen with a 16:9 video, like background-size: cover */
+.scene-frame iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 56.25vw;
+  min-width: 177.78vh;
+  min-height: 100vh;
+  border: 0;
+  transform: translate(-50%, -50%);
+}
+
+.scene-shade {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6)),
+    rgba(0, 0, 0, 0.15);
+  transition: opacity 1.2s ease;
+}
+
+body.scene-on .scene-shade {
+  opacity: 1;
+}
+
+/* panels turn a little see-through so the scene shows around them */
+body.scene-on {
+  --panel-bg: rgba(16, 13, 8, 0.66);
+}
+
+body.scene-on::before {
+  opacity: 0;
+}
+
+/* ---------- room view: only the timer, floating over the full scene ---------- */
+.room-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 14px;
+  margin-top: 14px;
+}
+
+.room-playing {
+  color: var(--gold-light);
+  font-size: 1rem;
+}
+
+.room-playing:empty {
+  display: none;
+}
+
+body.room-view .site-nav,
+body.room-view .sub-nav,
+body.room-view .tabbar,
+body.room-view .focus-top,
+body.room-view .lockin-grid,
+body.room-view .soundscape,
+body.room-view .settings-panel,
+body.room-view .reports,
+body.room-view .bg-controls,
+body.room-view .spotify-toggle {
+  display: none !important;
+}
+
+body.room-view .focus-app {
+  justify-content: center;
+  min-height: 100dvh;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+body.room-view .timer-panel {
+  background: rgba(10, 8, 5, 0.38);
+  border-color: color-mix(in srgb, var(--gold-light) 70%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+body.room-view .scene-shade {
+  background:
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.5)),
+    rgba(0, 0, 0, 0.08);
+}
+
+body.room-view.has-tabbar {
+  padding-bottom: 0;
+}
+

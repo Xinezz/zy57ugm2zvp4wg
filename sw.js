@@ -2,7 +2,7 @@
    Strategy: always try the network first (so updates show up), and fall back to the saved copy when offline.
    Bump CACHE_NAME when the list of files below changes. */
 
-const CACHE_NAME = "daily-planner-v14";
+const CACHE_NAME = "daily-planner-v15";
 
 const FILES = [
   "./",
@@ -45,6 +45,7 @@ const FILES = [
   "js/nav.js",
   "js/dashboard.js",
   "js/lockin.js",
+  "js/soundscape.js",
   "js/workshop.js",
   "js/journal.js",
   "js/vault.js",

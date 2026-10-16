@@ -1,5 +1,5 @@
 /* lockin.js - the Lock-In Room extras around the focus timer (focus.js):
-   link a session to a task or project, session notes, a distraction list, ambient sounds,
+   link a session to a task or project, session notes, a distraction list,
    custom presets, an end-of-session reflection that updates the task/project, and focus reports. */
 
 (() => {
@@ -98,139 +98,6 @@
 
   $("parkAdd").addEventListener("click", park);
   $("parkInput").addEventListener("keydown", (e) => { if (e.key === "Enter") park(); });
-
-  /* ---------- ambient sound (generated, no audio files) ---------- */
-
-  const SOUNDS = [
-    { id: "rain", label: "Rain" },
-    { id: "waves", label: "Ocean waves" },
-    { id: "brown", label: "Brown noise" },
-    { id: "fire", label: "Fireplace" },
-  ];
-  let audio = null;
-  let master = null;
-  let playing = null;
-  let nodes = [];
-  let crackleTimer = null;
-
-  function noiseBuffer(ctx, type) {
-    const length = ctx.sampleRate * 3;
-    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    let last = 0;
-    for (let i = 0; i < length; i++) {
-      const white = Math.random() * 2 - 1;
-      if (type === "brown") {
-        last = (last + 0.02 * white) / 1.02;
-        data[i] = last * 3.5;
-      } else {
-        data[i] = white;
-      }
-    }
-    return buffer;
-  }
-
-  function source(buffer) {
-    const s = audio.createBufferSource();
-    s.buffer = buffer;
-    s.loop = true;
-    s.start();
-    nodes.push(s);
-    return s;
-  }
-
-  function lfo(target, rate, depth, base) {
-    const osc = audio.createOscillator();
-    const gain = audio.createGain();
-    osc.frequency.value = rate;
-    gain.gain.value = depth;
-    target.value = base;
-    osc.connect(gain).connect(target);
-    osc.start();
-    nodes.push(osc);
-  }
-
-  function stopAmbient() {
-    nodes.forEach((n) => { try { n.stop(); } catch {} });
-    nodes = [];
-    clearInterval(crackleTimer);
-    playing = null;
-  }
-
-  function startAmbient(id) {
-    if (!audio) {
-      audio = new (window.AudioContext || window.webkitAudioContext)();
-      master = audio.createGain();
-      master.connect(audio.destination);
-    }
-    if (audio.state === "suspended") audio.resume();
-    stopAmbient();
-    master.gain.value = Number($("ambientVolume").value) / 100 * 0.6;
-    const white = noiseBuffer(audio, "white");
-    const brown = noiseBuffer(audio, "brown");
-
-    if (id === "rain") {
-      const band = audio.createBiquadFilter();
-      band.type = "bandpass";
-      band.frequency.value = 1800;
-      band.Q.value = 0.6;
-      const level = audio.createGain();
-      level.gain.value = 0.5;
-      source(white).connect(band).connect(level).connect(master);
-      const low = audio.createBiquadFilter();
-      low.type = "lowpass";
-      low.frequency.value = 400;
-      source(brown).connect(low).connect(master);
-    } else if (id === "waves") {
-      const low = audio.createBiquadFilter();
-      low.type = "lowpass";
-      lfo(low.frequency, 0.09, 500, 700);
-      const swell = audio.createGain();
-      lfo(swell.gain, 0.09, 0.45, 0.55);
-      source(brown).connect(low).connect(swell).connect(master);
-    } else if (id === "brown") {
-      const low = audio.createBiquadFilter();
-      low.type = "lowpass";
-      low.frequency.value = 600;
-      source(brown).connect(low).connect(master);
-    } else if (id === "fire") {
-      const low = audio.createBiquadFilter();
-      low.type = "lowpass";
-      low.frequency.value = 350;
-      const rumble = audio.createGain();
-      rumble.gain.value = 0.8;
-      source(brown).connect(low).connect(rumble).connect(master);
-      crackleTimer = setInterval(() => {
-        if (Math.random() > 0.55) return;
-        const pop = audio.createBufferSource();
-        pop.buffer = white;
-        const high = audio.createBiquadFilter();
-        high.type = "highpass";
-        high.frequency.value = 1500 + Math.random() * 2500;
-        const env = audio.createGain();
-        const t = audio.currentTime;
-        env.gain.setValueAtTime(0.0001, t);
-        env.gain.exponentialRampToValueAtTime(0.25 + Math.random() * 0.35, t + 0.004);
-        env.gain.exponentialRampToValueAtTime(0.0001, t + 0.03 + Math.random() * 0.06);
-        pop.connect(high).connect(env).connect(master);
-        pop.start(t, Math.random() * 2);
-        pop.stop(t + 0.12);
-      }, 90);
-    }
-    playing = id;
-  }
-
-  function renderAmbient() {
-    $("ambientBtns").replaceChildren(...SOUNDS.map((s) =>
-      h("button", { type: "button", class: "chip ambient-btn", "aria-pressed": String(playing === s.id), onclick: () => {
-        if (playing === s.id) stopAmbient(); else startAmbient(s.id);
-        renderAmbient();
-      } }, s.label)));
-  }
-
-  $("ambientVolume").addEventListener("input", (e) => {
-    if (master) master.gain.value = Number(e.target.value) / 100 * 0.6;
-  });
 
   /* ---------- custom presets ---------- */
 
@@ -395,8 +262,6 @@
 
   linkOptions();
   renderParked();
-  renderAmbient();
   renderPresets();
   renderReports();
-  window.addEventListener("pagehide", stopAmbient);
 })();
