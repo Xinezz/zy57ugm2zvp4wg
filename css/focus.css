@@ -1468,3 +1468,92 @@ body.room-view.has-tabbar {
     font-size: clamp(3rem, 15vw, 4.5rem);
   }
 }
+
+/* ---------- candlelight: the candle lights the room (timer-visual.js) ---------- */
+.candle-light {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  --cx: 50%;
+  --cy: 30%;
+  --candle-r: 600px;
+}
+
+.candle-light.is-on {
+  opacity: var(--candle-strength, 1);
+}
+
+/* the dark: everything far from the flame fades into shadow */
+.candle-dark {
+  position: absolute;
+  inset: -10%;
+  background: radial-gradient(circle var(--candle-r) at calc(var(--cx) + 10vw) calc(var(--cy) + 10vh),
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.1) 25%,
+    rgba(8, 4, 0, 0.5) 60%,
+    rgba(6, 3, 0, 0.76) 100%);
+  transform-origin: calc(var(--cx) + 10vw) calc(var(--cy) + 10vh);
+  transition: background 0.6s ease;
+}
+
+/* the warm light pooling around the flame */
+.candle-warm {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(circle calc(var(--candle-r) * 0.75) at var(--cx) var(--cy),
+    rgba(255, 176, 74, 0.42) 0%,
+    rgba(255, 150, 50, 0.2) 30%,
+    rgba(255, 130, 40, 0.07) 58%,
+    rgba(255, 130, 40, 0) 80%);
+}
+
+.candle-light:not(.is-running) .candle-warm {
+  opacity: 0.55;
+}
+
+/* a break: cool, calm light */
+.candle-light.is-rest .candle-warm {
+  background: radial-gradient(circle calc(var(--candle-r) * 0.75) at var(--cx) var(--cy),
+    rgba(95, 208, 216, 0.24) 0%,
+    rgba(80, 190, 200, 0.1) 35%,
+    rgba(80, 190, 200, 0) 75%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .candle-light.is-running .candle-warm {
+    animation: candle-glow 1.7s ease-in-out infinite;
+  }
+
+  .candle-light.is-running .candle-dark {
+    animation: candle-reach 2.3s ease-in-out infinite;
+  }
+}
+
+@keyframes candle-glow {
+  0%, 100% { opacity: 1; }
+  18% { opacity: 0.82; }
+  33% { opacity: 0.96; }
+  52% { opacity: 0.78; }
+  68% { opacity: 1; }
+  84% { opacity: 0.88; }
+}
+
+@keyframes candle-reach {
+  0%, 100% { transform: scale(1); }
+  28% { transform: scale(1.035); }
+  57% { transform: scale(0.985); }
+  79% { transform: scale(1.02); }
+}
+
+/* the candle itself glows brighter in its own light */
+.timer-stage[data-style="candle"] .tv-svg {
+  filter: drop-shadow(0 0 18px rgba(255, 170, 70, 0.35));
+}
+
+.timer-stage[data-style="candle"][data-phase="rest"] .tv-svg {
+  filter: drop-shadow(0 0 18px rgba(95, 208, 216, 0.35));
+}

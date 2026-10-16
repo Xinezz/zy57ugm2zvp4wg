@@ -174,6 +174,8 @@
       show(".f1", 0.95); show(".f2", 0.97); show(".f3", 0.99); show(".f4", 1);
     }
 
+    syncLight();
+
     // when the session will end, in Singapore time
     const ends = $("timerEnds");
     if (running) {
@@ -184,6 +186,56 @@
       ends.textContent = p > 0 ? "Paused" : "";
     }
   }
+
+  /* ---------- candlelight: with the candle style, the candle is the room's only light ---------- */
+
+  let light = null;
+  let lightFrame = 0;
+
+  function placeLight() {
+    lightFrame = 0;
+    if (!light) return;
+    const flame = q(".tv-flame-outer");
+    if (!flame) return;
+    const r = flame.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height * 0.55;
+    const w = window.innerWidth;
+    const hgt = window.innerHeight;
+    // a bigger pool of light while the flame burns; smaller when paused
+    const radius = Math.max(340, Math.hypot(w, hgt) * (last.running ? 0.5 : 0.36));
+    // scrolled away from the candle: the room isn't left in the dark
+    const outside = cy < 0 ? -cy : cy > hgt ? cy - hgt : 0;
+    const strength = Math.max(0.3, 1 - outside / 700);
+    light.style.setProperty("--cx", `${cx.toFixed(1)}px`);
+    light.style.setProperty("--cy", `${cy.toFixed(1)}px`);
+    light.style.setProperty("--candle-r", `${radius.toFixed(0)}px`);
+    light.style.setProperty("--candle-strength", strength.toFixed(2));
+  }
+
+  const queueLight = () => { if (light && !lightFrame) lightFrame = requestAnimationFrame(placeLight); };
+
+  function syncLight() {
+    if (style === "candle" && !light) {
+      light = h("div", { class: "candle-light", "aria-hidden": "true" }, h("div", { class: "candle-dark" }), h("div", { class: "candle-warm" }));
+      document.body.appendChild(light);
+      requestAnimationFrame(() => { placeLight(); light.classList.add("is-on"); });
+    } else if (style !== "candle" && light) {
+      const old = light;
+      light = null;
+      old.classList.remove("is-on");
+      setTimeout(() => old.remove(), 1200);
+    }
+    if (!light) return;
+    light.classList.toggle("is-running", !!last.running);
+    light.classList.toggle("is-rest", last.phase === "rest");
+    queueLight();
+    // the flame slides down as the candle burns (0.3s), so follow it a moment longer
+    setTimeout(queueLight, 350);
+  }
+
+  window.addEventListener("scroll", queueLight, { passive: true });
+  window.addEventListener("resize", queueLight);
 
   function draw() {
     visual.innerHTML = SVG[style];
