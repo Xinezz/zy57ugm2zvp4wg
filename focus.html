@@ -54,7 +54,13 @@
   <section class="timer-panel" aria-label="Timer">
     <div class="phase-label" id="phaseLabel">Focus</div>
 
-    <div class="time-display" id="timeDisplay" role="timer">25:00</div>
+    <div class="timer-stage" id="timerStage" data-style="ring">
+      <div class="timer-visual" id="timerVisual"></div>
+      <div class="timer-readout">
+        <div class="time-display" id="timeDisplay" role="timer">25:00</div>
+        <div class="timer-ends" id="timerEnds" aria-live="off"></div>
+      </div>
+    </div>
 
     <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
 
@@ -71,6 +77,8 @@
     </div>
 
     <div class="lock-note" id="lockNote" hidden>Locked in. Pause to leave or change settings.</div>
+    <div class="tv-picker" id="timerStylePicker" role="group" aria-label="Timer style"></div>
+
     <div class="room-row">
       <span class="room-playing" id="roomPlaying"></span>
       <button type="button" class="chip room-btn" id="roomBtn" title="Hide everything but the timer and the scene">&#x26F6; Room view</button>
@@ -247,6 +255,7 @@
 <script src="js/celebrate.js"></script>
 <script src="js/planner-core.js"></script>
 <script src="js/focus.js"></script>
+<script src="js/timer-visual.js"></script>
 <script src="js/life-core.js"></script>
 <script src="js/data.js"></script>
 <script src="js/nav.js"></script>

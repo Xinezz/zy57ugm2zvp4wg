@@ -256,6 +256,17 @@ const UPDATE_SEEDS = [
     glyph: "♫",
     bg: "linear-gradient(135deg, #1b1430, #d4af37, #2b5876)",
   },
+  {
+    id: "up-24-living-timer",
+    date: "2026-10-17",
+    title: "The Living Timer",
+    year: "Oct 2026",
+    medium: "Timer styles",
+    description: "The Lock-In timer became something to watch: a glowing ring with a minute hand, an hourglass that drains, a candle that burns down, or a tree that grows from a seed over each session, plus the time it will finish.",
+    link: "focus.html",
+    glyph: "⌛",
+    bg: "linear-gradient(135deg, #14110a, #5fa84a, #d4af37)",
+  },
 ];
 
 const WINGS = {

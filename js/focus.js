@@ -143,6 +143,8 @@
     });
 
     document.title = running ? `${formatTime(remainingMs)} - ${label}` : "Lock-In Room";
+    // the timer visual (timer-visual.js) redraws from this
+    document.dispatchEvent(new CustomEvent("focus:render", { detail: { phase, running, remainingMs, totalMs } }));
   }
 
   /* ---------- session events, used by the Lock-In Room (lockin.js) ---------- */
@@ -168,7 +170,7 @@
     setPhase("rest", false);
   }
 
-  window.FocusTimer = { finishEarly, current: () => ({ phase, running }) };
+  window.FocusTimer = { finishEarly, current: () => ({ phase, running, remainingMs, totalMs }) };
 
   function stopTicker() {
     if (ticker) {

@@ -1074,3 +1074,397 @@ body.room-view.has-tabbar {
   padding-bottom: 0;
 }
 
+
+/* ==========================================================
+   Timer visuals: ring, hourglass, candle, tree (timer-visual.js)
+   ========================================================== */
+
+.timer-stage {
+  --tv: var(--gold);
+  --tv-light: var(--gold-light);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 28px;
+  margin: 4px 0 6px;
+}
+
+.timer-stage[data-phase="rest"] {
+  --tv: var(--done);
+  --tv-light: #8fe3e8;
+}
+
+.timer-readout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timer-ends {
+  min-height: 1.3em;
+  color: var(--gold-dim);
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+.timer-visual:empty {
+  display: none;
+}
+
+.tv-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* the progress bar is only needed with plain digits */
+.timer-panel:has(.timer-stage:not([data-style="classic"])) .progress {
+  display: none;
+}
+
+/* ---------- ring: the digits sit inside it ---------- */
+.timer-stage[data-style="ring"] {
+  position: relative;
+  width: min(360px, 82vw);
+  aspect-ratio: 1;
+  margin: 6px auto 10px;
+}
+
+.timer-stage[data-style="ring"] .timer-visual {
+  position: absolute;
+  inset: 0;
+}
+
+.timer-stage[data-style="ring"] .timer-readout {
+  position: relative;
+  z-index: 1;
+}
+
+.timer-stage[data-style="ring"] .time-display {
+  font-size: clamp(3.4rem, 15vw, 5.8rem);
+}
+
+.tv-track {
+  fill: none;
+  stroke: color-mix(in srgb, var(--tv) 16%, transparent);
+  stroke-width: 7;
+}
+
+.tv-arc {
+  fill: none;
+  stroke: var(--tv);
+  stroke-width: 7;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s linear, stroke 0.4s;
+}
+
+.tv-tip {
+  fill: var(--tv-light);
+  transition: opacity 0.3s;
+}
+
+.tv-second {
+  fill: var(--tv-light);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.is-running .tv-second {
+  opacity: 0.8;
+}
+
+.tv-tick {
+  stroke: color-mix(in srgb, var(--tv) 30%, transparent);
+  stroke-width: 1;
+}
+
+.tv-tick.major {
+  stroke: color-mix(in srgb, var(--tv) 60%, transparent);
+  stroke-width: 1.6;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .timer-stage[data-style="ring"].is-running .tv-ring {
+    animation: rgbHue 12s linear infinite;
+  }
+}
+
+/* ---------- the side-by-side styles ---------- */
+.timer-stage:is([data-style="hourglass"], [data-style="candle"], [data-style="tree"]) .timer-visual {
+  width: clamp(110px, 24vw, 170px);
+  height: clamp(180px, 38vw, 270px);
+  flex-shrink: 0;
+}
+
+.timer-stage[data-style="tree"] .timer-visual {
+  width: clamp(140px, 30vw, 210px);
+}
+
+/* hourglass */
+.tv-wood {
+  fill: #6b4a24;
+  stroke: var(--tv);
+  stroke-width: 1.5;
+}
+
+.tv-post {
+  stroke: var(--tv);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.tv-glass {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: color-mix(in srgb, var(--tv-light) 80%, transparent);
+  stroke-width: 2.2;
+}
+
+.tv-shine {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.tv-sand {
+  fill: var(--tv-light);
+  transition: y 0.3s linear, height 0.3s linear;
+}
+
+.tv-stream {
+  stroke: var(--tv-light);
+  stroke-width: 2;
+  stroke-dasharray: 3 4;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tv-stream {
+    animation: sand-fall 0.5s linear infinite;
+  }
+}
+
+@keyframes sand-fall {
+  to { stroke-dashoffset: -14; }
+}
+
+/* candle */
+.tv-plate {
+  fill: #2a2416;
+  stroke: var(--tv);
+  stroke-width: 1.5;
+}
+
+.tv-wax {
+  transition: y 0.3s linear, height 0.3s linear;
+}
+
+.tv-wax-top {
+  fill: #fffaf0;
+  transition: cy 0.3s linear;
+}
+
+.tv-drip {
+  fill: #fff8e8;
+  transition: transform 0.3s linear;
+}
+
+.tv-flame-group {
+  transition: transform 0.3s linear;
+}
+
+.tv-wick {
+  stroke: #2b2116;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.tv-flame-outer {
+  fill: #ffb03a;
+}
+
+.tv-flame-inner {
+  fill: #fff3c4;
+}
+
+.tv-flame {
+  transform-origin: 60px 40px;
+  transform-box: view-box;
+  transition: transform 0.4s, opacity 0.4s;
+}
+
+.tv-halo {
+  transition: opacity 0.4s;
+}
+
+.timer-stage[data-phase="rest"] .tv-flame-outer {
+  fill: #5fd0d8;
+}
+
+.timer-stage[data-phase="rest"] .tv-halo {
+  opacity: 0.5;
+}
+
+.timer-stage:not(.is-running) .tv-flame {
+  transform: scale(0.75);
+  opacity: 0.75;
+}
+
+.timer-stage:not(.is-running) .tv-halo {
+  opacity: 0.35;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .timer-stage.is-running .tv-flame {
+    animation: flicker 1.4s ease-in-out infinite;
+  }
+
+  .timer-stage.is-running .tv-halo {
+    animation: halo 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes flicker {
+  0%, 100% { transform: scale(1, 1) rotate(0deg); }
+  25% { transform: scale(0.94, 1.06) rotate(-2deg); }
+  50% { transform: scale(1.04, 0.95) rotate(1.5deg); }
+  75% { transform: scale(0.97, 1.04) rotate(-1deg); }
+}
+
+@keyframes halo {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.65; }
+}
+
+/* tree */
+.tv-ground {
+  fill: color-mix(in srgb, var(--tv) 14%, transparent);
+}
+
+.tv-pot {
+  fill: #9a5a33;
+  stroke: #6e3d20;
+  stroke-width: 1.5;
+}
+
+.tv-pot-rim {
+  fill: #b46c3f;
+}
+
+.tv-trunk {
+  fill: #7a4f2a;
+  transition: y 0.6s ease, height 0.6s ease;
+}
+
+.tv-branch {
+  fill: none;
+  stroke: #7a4f2a;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  transition: stroke-dashoffset 0.8s ease;
+}
+
+.tv-branch.is-grown {
+  stroke-dashoffset: 0;
+}
+
+.tv-sprout path {
+  fill: #7cc35a;
+}
+
+.tv-sprout {
+  transition: opacity 0.6s;
+}
+
+.tv-leaf,
+.tv-fruit {
+  transform: scale(0);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.8s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+.tv-leaf.is-grown,
+.tv-fruit.is-grown {
+  transform: scale(1);
+}
+
+.tv-leaf { fill: #5fa84a; }
+.tv-leaf.l2, .tv-leaf.l4, .tv-leaf.l7 { fill: #4a9640; }
+.tv-leaf.l5 { fill: #74bd58; }
+.tv-fruit { fill: var(--gold-light); }
+
+.timer-stage[data-phase="rest"] .tv-leaf { fill: #4fb3a4; }
+.timer-stage[data-phase="rest"] .tv-leaf.l5 { fill: #63c9b8; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .timer-stage[data-phase="rest"] .tv-plant,
+  .timer-stage.is-running .tv-plant {
+    transform-origin: 80px 170px;
+    transform-box: view-box;
+    animation: sway 6s ease-in-out infinite;
+  }
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(1.5deg); }
+}
+
+/* ---------- style picker ---------- */
+.tv-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.tv-pick {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--gold-dim);
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.tv-pick:hover {
+  color: var(--gold-light);
+  border-color: var(--gold);
+}
+
+.tv-pick[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 18%, transparent);
+  color: var(--gold-light);
+}
+
+@media (max-width: 520px) {
+  .tv-pick-label {
+    display: none;
+  }
+
+  .tv-pick {
+    padding: 4px 12px;
+    font-size: 1.1rem;
+  }
+
+  .timer-stage:is([data-style="hourglass"], [data-style="candle"], [data-style="tree"]) {
+    gap: 4px 14px;
+  }
+
+  .timer-stage:is([data-style="hourglass"], [data-style="candle"], [data-style="tree"]) .time-display {
+    font-size: clamp(3rem, 15vw, 4.5rem);
+  }
+}
