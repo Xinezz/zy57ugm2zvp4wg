@@ -784,3 +784,54 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- session dots and the breathing glow ---------- */
+.session-count {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.session-dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 5px;
+  max-width: 180px;
+}
+
+.session-dots i {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--gold-dim);
+  border-radius: 50%;
+}
+
+.session-dots i.is-done {
+  border-color: var(--gold-light);
+  background: radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--gold) 60%, transparent);
+}
+
+/* While locked in, the timer card glows in and out slowly: about 4 seconds in, 4 out.
+   Breathe along with it if you need to settle. */
+@media (prefers-reduced-motion: no-preference) {
+  .running.phase-focus .timer-panel {
+    animation: lockin-breathe 8s ease-in-out infinite;
+  }
+
+  .running.phase-rest .timer-panel {
+    animation: rest-breathe 8s ease-in-out infinite;
+  }
+}
+
+@keyframes lockin-breathe {
+  0%, 100% { box-shadow: 0 0 14px color-mix(in srgb, var(--gold) 25%, transparent), inset 0 0 0 transparent; }
+  50% { box-shadow: 0 0 46px color-mix(in srgb, var(--gold) 55%, transparent), inset 0 0 40px color-mix(in srgb, var(--gold) 12%, transparent); }
+}
+
+@keyframes rest-breathe {
+  0%, 100% { box-shadow: 0 0 14px rgba(31, 165, 173, 0.3); }
+  50% { box-shadow: 0 0 46px rgba(31, 165, 173, 0.6), inset 0 0 40px rgba(31, 165, 173, 0.14); }
+}

@@ -217,3 +217,61 @@
     flex: 1;
   }
 }
+
+/* ---------- two-week mood chart ---------- */
+.mood-avg {
+  font-size: 0.95rem;
+}
+
+.mood-chart {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  align-items: end;
+  gap: 4px;
+  height: 110px;
+}
+
+.mood-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 3px;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--gold-dim);
+  font: inherit;
+  cursor: pointer;
+}
+
+.mood-fill {
+  width: 100%;
+  max-width: 18px;
+  border-radius: 5px 5px 2px 2px;
+  background: var(--gold);
+  transition: height 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.2s;
+}
+
+.mood-fill.mood-1 { background: #b3262e; }
+.mood-fill.mood-2 { background: #c9682a; }
+.mood-fill.mood-3 { background: var(--gold); }
+.mood-fill.mood-4 { background: #8fc54a; }
+.mood-fill.mood-5 { background: var(--done); box-shadow: 0 0 8px rgba(31, 165, 173, 0.6); }
+.mood-bar.is-empty .mood-fill { background: #2a2416; }
+
+.mood-day {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.mood-bar.is-current .mood-day {
+  color: var(--gold-light);
+  text-decoration: underline;
+}
+
+.mood-bar:hover .mood-fill,
+.mood-bar:focus-visible .mood-fill {
+  filter: brightness(1.25);
+}

@@ -196,4 +196,20 @@
   .vault-side {
     position: static;
   }
+
+  /* categories become a row of chips so the notes aren't pushed far down */
+  .cat-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .cat-btn {
+    gap: 8px;
+    width: auto;
+    padding: 3px 12px;
+    border-color: color-mix(in srgb, var(--gold) 35%, transparent);
+    border-radius: 999px;
+    font-size: 0.95rem;
+  }
 }

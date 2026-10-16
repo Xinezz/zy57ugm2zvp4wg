@@ -117,7 +117,17 @@
     $("timeDisplay").textContent = formatTime(remainingMs);
     $("progressFill").style.width = totalMs ? `${((totalMs - remainingMs) / totalMs) * 100}%` : "0%";
     $("startBtn").textContent = running ? "Pause" : remainingMs < totalMs ? "Resume" : "Start";
-    $("sessionCount").textContent = `Sessions today: ${sessionsToday()}`;
+    const done = sessionsToday();
+    $("sessionCount").textContent = `Sessions today: ${done}`;
+    // one gold dot per finished session, plus an empty one for the session you're on
+    const dots = $("sessionDots");
+    if (dots && dots.childElementCount !== done + 1) {
+      dots.replaceChildren(...Array.from({ length: Math.min(done, 12) + 1 }, (_, i) => {
+        const dot = document.createElement("i");
+        if (i < done) dot.className = "is-done";
+        return dot;
+      }));
+    }
 
     document.body.classList.toggle("phase-focus", phase === "focus");
     document.body.classList.toggle("phase-rest", phase === "rest");

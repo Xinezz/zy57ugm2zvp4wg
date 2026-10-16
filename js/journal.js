@@ -33,6 +33,7 @@
     renderSide();
     renderRecap();
     renderStreak();
+    renderMoodChart();
   }
 
   function update(field, value) {
@@ -107,6 +108,28 @@
         ))) : [h("li", { class: "empty-note" }, "Your entries will appear here.")]));
   }
 
+  function renderMoodChart() {
+    const keys = LifeCore.lastNDays(today, 14);
+    const moods = keys.map((k) => (journal[k] && journal[k].mood) || 0);
+    const rated = moods.filter(Boolean);
+    $("moodAvg").textContent = rated.length
+      ? `average: ${MOODS[Math.round(rated.reduce((a, b) => a + b, 0) / rated.length) - 1].label}`
+      : "";
+    $("moodChart").replaceChildren(...keys.map((k, i) => {
+      const m = moods[i];
+      const label = `${LifeData.prettyDate(k, { weekday: "short", day: "numeric", month: "short" })}: ${m ? MOODS[m - 1].label : "no mood set"}`;
+      return h("button", {
+        type: "button",
+        class: `mood-bar${k === day ? " is-current" : ""}${m ? "" : " is-empty"}`,
+        title: label,
+        "aria-label": label,
+        onclick: () => go(k),
+      },
+      h("span", { class: `mood-fill mood-${m}`, style: `height:${m ? 18 + m * 16 : 6}%` }),
+      h("span", { class: "mood-day" }, LifeData.prettyDate(k, { weekday: "narrow" })));
+    }));
+  }
+
   function renderStreak() {
     const streak = journalStreak(journal, today);
     $("streakText").textContent = streak
@@ -159,6 +182,7 @@
     renderEntry();
     renderSide();
     renderRecap();
+    renderMoodChart();
   }
 
   $("prevDay").addEventListener("click", () => go(addDays(day, -1)));
@@ -174,4 +198,5 @@
   renderSide();
   renderRecap();
   renderStreak();
+  renderMoodChart();
 })();
