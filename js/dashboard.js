@@ -10,10 +10,44 @@
   const fmt = (m) => (m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m}m`);
   const short = (key) => LifeData.prettyDate(key, { weekday: "short", day: "numeric", month: "short" });
 
+  // one line of encouragement a day (the same all day, a new one tomorrow)
+  const DAILY_LINES = [
+    "Small steps every day add up to big things.",
+    "Finish one thing before you start the next.",
+    "Done is better than perfect. Ship it.",
+    "Future you will thank you for today's work.",
+    "Focus on the next right step, not the whole staircase.",
+    "Consistency beats intensity.",
+    "A messy start beats a perfect plan that never begins.",
+    "You don't need more time, just fewer tabs open.",
+    "Make today's list short and finish all of it.",
+    "Progress, not perfection.",
+    "Lock in for 25 minutes. That's all it takes to start.",
+    "Every expert was once a beginner who kept going.",
+    "Write it down so your head is free to think.",
+    "The hard part is starting. You're already here.",
+    "Tiny wins today, big wins this month.",
+    "Rest is part of the work, not a break from it.",
+    "Learn one new thing today and write it in the vault.",
+    "Be proud of how far you've come.",
+    "Discipline is choosing what you want most over what you want now.",
+    "If it takes less than two minutes, do it now.",
+    "Clear the small tasks, then go deep on the big one.",
+    "Your streak is a promise to yourself. Keep it.",
+    "Good things take time. Keep building.",
+    "One focused hour beats a distracted day.",
+    "Celebrate the small wins. They count.",
+    "Plan the night before and wake up with a head start.",
+    "Ask for help early, not late.",
+    "Build things you're proud to show.",
+  ];
+
   function greet() {
     const hour = PlannerCore.sgNow().hours;
     $("greeting").textContent = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
     $("todayText").textContent = LifeData.prettyDate(today, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const dayNumber = LifeCore.daysBetween("2026-01-01", today);
+    $("dailyLine").textContent = DAILY_LINES[((dayNumber % DAILY_LINES.length) + DAILY_LINES.length) % DAILY_LINES.length];
   }
 
   /* ---------- today ---------- */
@@ -29,20 +63,25 @@
 
     $("taskList").replaceChildren(...(items.length ? items.map((item) =>
       h("li", { class: `list-item${item.done ? " is-done" : ""}` },
-        h("input", { type: "checkbox", checked: item.done, "aria-label": `Done: ${item.text}`, onchange: (e) => toggle(item, e.target.checked) }),
+        h("input", { type: "checkbox", checked: item.done, "aria-label": `Done: ${item.text}`, onchange: (e) => toggle(item, e.target.checked, e.target) }),
         h("span", { class: "grow" }, item.text),
         item.repeat ? h("span", { class: "tag" }, "repeats") : null))
       : [h("li", { class: "empty-note" }, "A clear day. Add something below or plan ahead in the planner.")]));
   }
 
-  function toggle(item, done) {
+  function toggle(item, done, box) {
     const days = LifeData.load("days");
     const rules = LifeData.load("rules");
     PlannerCore.setDone(days, rules, today, item, done);
     LifeData.save("days", days);
     LifeData.save("rules", rules);
     const p = LifeCore.dailyProgress(LifeCore.tasksOn(days, rules, today));
-    if (done && p.total && p.done === p.total) showToast("Every task done today. Brilliant!");
+    if (done && p.total && p.done === p.total) {
+      showToast("Every task done today. Brilliant!");
+      if (typeof Celebrate !== "undefined") Celebrate.confetti({ count: 140 });
+    } else if (done && typeof Celebrate !== "undefined") {
+      Celebrate.burstFrom(box, 24);
+    }
     LifeData.checkAchievements();
     render();
   }
@@ -166,15 +205,33 @@
   /* ---------- upcoming, projects, week ---------- */
 
   function renderUpcoming(d) {
-    const list = LifeCore.upcoming(d, today, 14).slice(0, 10);
-    const label = { task: "Task", deadline: "Deadline", milestone: "Milestone", countdown: "Countdown" };
-    $("upcomingList").replaceChildren(...(list.length ? list.map((u) => {
-      const left = LifeCore.daysBetween(today, u.key);
-      const href = u.kind === "deadline" || u.kind === "milestone" ? `workshop.html#${u.ref}` : u.kind === "task" ? "planner.html" : null;
-      return h("li", { class: `list-item up-${u.kind}` },
-        h("span", { class: "when" }, left === 1 ? "Tomorrow" : short(u.key)),
-        h("span", { class: "grow" }, href ? h("a", { href }, u.title) : u.title),
-        h("span", { class: `tag up-tag` }, label[u.kind]));
+    // one row per day: a little calendar tile, then that day's deadlines first and tasks after
+    const days = [];
+    LifeCore.upcoming(d, today, 14).forEach((u) => {
+      const last = days[days.length - 1];
+      if (last && last.key === u.key) last.items.push(u);
+      else days.push({ key: u.key, items: [u] });
+    });
+    const MAX_TASK_CHIPS = 3;
+    $("upcomingList").replaceChildren(...(days.length ? days.slice(0, 6).map(({ key, items }) => {
+      const left = LifeCore.daysBetween(today, key);
+      const big = items.filter((u) => u.kind !== "task");
+      const tasks = items.filter((u) => u.kind === "task");
+      const chip = (u) => {
+        const href = u.kind === "deadline" || u.kind === "milestone" ? `workshop.html#${u.ref}` : u.kind === "task" ? `planner.html` : null;
+        return h(href ? "a" : "span", { class: `up-chip up-${u.kind}`, href }, u.title);
+      };
+      return h("li", { class: `up-day${big.length ? " has-deadline" : ""}` },
+        h("div", { class: "up-tile", "aria-hidden": "true" },
+          h("span", {}, LifeData.prettyDate(key, { weekday: "short" })),
+          h("strong", {}, LifeData.prettyDate(key, { day: "numeric" })),
+          h("span", {}, LifeData.prettyDate(key, { month: "short" }))),
+        h("div", { class: "up-body" },
+          h("span", { class: "up-when" }, left === 1 ? "Tomorrow" : left < 7 ? `In ${left} days` : short(key)),
+          h("div", { class: "up-chips" },
+            big.map(chip),
+            tasks.slice(0, MAX_TASK_CHIPS).map(chip),
+            tasks.length > MAX_TASK_CHIPS ? h("a", { class: "up-chip up-more", href: "planner.html" }, `+${tasks.length - MAX_TASK_CHIPS} more`) : null)));
     }) : [h("li", { class: "empty-note" }, "Nothing due in the next two weeks.")]));
   }
 
@@ -210,8 +267,67 @@
         h("span", { class: "chart-day" }, LifeData.prettyDate(x.key, { weekday: "short" }).slice(0, 2)))));
   }
 
+  /* ---------- consistency heatmap (last 20 weeks) ---------- */
+
+  const HEAT_WEEKS = 26;
+
+  function renderHeatmap(d) {
+    // columns are weeks starting on Monday; the last column is the current week
+    const start = LifeCore.addDays(LifeCore.weekStart(today), -7 * (HEAT_WEEKS - 1));
+    const keys = [];
+    for (let i = 0; i < HEAT_WEEKS * 7; i++) keys.push(LifeCore.addDays(start, i));
+    const activity = LifeCore.activityByDay(d, keys);
+
+    $("heatmap").replaceChildren(...activity.map((a) => {
+      const future = a.key > today;
+      const parts = [];
+      if (a.tasksDone) parts.push(`${a.tasksDone} task${a.tasksDone === 1 ? "" : "s"}`);
+      if (a.focusMinutes) parts.push(`${fmt(a.focusMinutes)} focus`);
+      if (a.journaled) parts.push("reflected");
+      return h("span", {
+        class: `heat l${future ? "x" : a.level}${a.key === today ? " is-today" : ""}`,
+        title: future ? "" : `${short(a.key)}: ${parts.length ? parts.join(", ") : "nothing logged"}`,
+      });
+    }));
+
+    // month names above the first week that starts in that month
+    let lastMonth = "";
+    let lastLabelAt = -9;
+    $("heatMonths").replaceChildren(...Array.from({ length: HEAT_WEEKS }, (_, w) => {
+      const month = LifeData.prettyDate(keys[w * 7], { month: "short" });
+      // a label needs about three columns of room, so skip one that would crowd the previous
+      const label = month !== lastMonth && w - lastLabelAt >= 3 ? month : "";
+      if (label) lastLabelAt = w;
+      lastMonth = month;
+      return h("span", {}, label);
+    }));
+
+    const past = activity.filter((a) => a.key <= today);
+    const streak = LifeCore.activeStreak(past, today);
+    $("streakBadge").replaceChildren(
+      LifeData.icon("flame"),
+      h("strong", {}, String(streak.current)),
+      h("span", {}, `day streak · best ${streak.best}`));
+    $("streakBadge").classList.toggle("is-hot", streak.current >= 3);
+    $("heatSummary").textContent = `${streak.activeDays} active day${streak.activeDays === 1 ? "" : "s"} in the last ${HEAT_WEEKS} weeks`;
+
+    const total = (field) => past.reduce((n, a) => n + (typeof a[field] === "boolean" ? Number(a[field]) : a[field]), 0);
+    const best = past.slice().sort((a, b) => b.score - a.score)[0];
+    const stat = (value, label) => h("div", { class: "heat-stat" }, h("strong", {}, value), h("span", {}, label));
+    $("heatStats").replaceChildren(
+      stat(String(total("tasksDone")), "tasks finished"),
+      stat(fmt(total("focusMinutes")), "locked in"),
+      stat(String(total("journaled")), "reflections"),
+      stat(best && best.score > 0 ? short(best.key) : "-", "biggest day"),
+    );
+    // show the latest weeks first when the map is wider than the screen
+    const scroller = $("heatScroll");
+    scroller.scrollLeft = scroller.scrollWidth;
+  }
+
   function render() {
     const d = LifeData.all();
+    renderHeatmap(d);
     renderToday(d);
     renderSide(d);
     renderCountdowns(d);

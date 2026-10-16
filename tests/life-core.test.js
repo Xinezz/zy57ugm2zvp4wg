@@ -163,4 +163,23 @@ test("timestamps are dated in Singapore time, not UTC", () => {
   assert.equal(L.keyOfIso(""), "");
 });
 
+test("activity heatmap levels and the active-day streak", () => {
+  const d = empty();
+  d.days = {
+    "2026-10-09": { tasks: [{ text: "a", done: true }] },
+    "2026-10-10": { tasks: [{ text: "a", done: true }, { text: "b", done: true }, { text: "c", done: true }] },
+  };
+  d.focusLog = [{ date: "2026-10-11", minutes: 100 }, { date: "2026-10-11", minutes: 75 }];
+  d.journal = { "2026-10-11": { accomplished: "x" } };
+  const keys = ["2026-10-08", "2026-10-09", "2026-10-10", "2026-10-11"];
+  const a = L.activityByDay(d, keys);
+  assert.deepEqual(a.map((x) => x.level), [0, 1, 2, 4]);
+  assert.equal(a[3].focusMinutes, 175);
+  assert.equal(a[3].journaled, true);
+  assert.deepEqual(L.activeStreak(a, "2026-10-11"), { current: 3, best: 3, activeDays: 3 });
+  // today not started yet: the streak still counts up to yesterday
+  assert.equal(L.activeStreak(a, "2026-10-12").current, 3);
+  assert.equal(L.activeStreak(a, "2026-10-13").current, 0);
+});
+
 console.log(`\n${passed} passed`);

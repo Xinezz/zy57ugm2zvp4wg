@@ -1,12 +1,20 @@
 /* loader.js - game-style loading screen with a progress bar.
    Loaded in the <head>; the screen itself is the #loader element at the top of each page's <body>.
-   It follows real progress (pictures and the font), hides once the page has loaded, and shows again
-   straight away when you follow a link, so page changes never look frozen. */
+   It plays on the first page of each visit and follows real progress (pictures and the font).
+   After that, pages open straight away and cross-fade into each other (see @view-transition in
+   base.css), so moving around the site feels instant. */
 
 const PageLoader = (() => {
   const MIN_VISIBLE_MS = 350;
   const SAFETY_MS = 8000;
+  const SEEN_KEY = "loaderShownThisVisit";
   const startedAt = Date.now();
+
+  // the loading screen already played in this tab's visit: hide it before the page first paints
+  let skip = false;
+  try { skip = sessionStorage.getItem(SEEN_KEY) === "1"; } catch {}
+  if (skip) document.documentElement.classList.add("loader-skip");
+  const shownThisVisit = () => { try { return sessionStorage.getItem(SEEN_KEY) === "1"; } catch { return false; } };
 
   let screen = null;
   let fill = null;
@@ -46,6 +54,7 @@ const PageLoader = (() => {
   function finish() {
     if (finished) return;
     finished = true;
+    try { sessionStorage.setItem(SEEN_KEY, "1"); } catch {}
     clearInterval(trickle);
     advance(1);
     const wait = Math.max(0, MIN_VISIBLE_MS - (Date.now() - startedAt));
@@ -75,7 +84,7 @@ const PageLoader = (() => {
 
   /** Shows the loading screen again while the browser goes to another page. */
   function leave() {
-    if (!screen) return;
+    if (!screen || shownThisVisit()) return;
     finished = false;
     progress = 0;
     screen.hidden = false;

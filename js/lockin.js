@@ -336,6 +336,7 @@
     try { localStorage.removeItem(NOTES_DRAFT); } catch {}
     pending = null;
     $("reflectDialog").close();
+    if (entry.minutes >= LifeCore.MIN_FOCUS_SESSION && typeof Celebrate !== "undefined") Celebrate.confetti({ count: 80 });
     linkOptions();
     renderReports();
     LifeData.checkAchievements();

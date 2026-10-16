@@ -76,6 +76,7 @@ test("stylesheet image and font urls exist", () => {
   for (const css of fs.readdirSync(path.join(root, "css"))) {
     const text = read(`css/${css}`);
     for (const m of text.matchAll(/url\("([^"]+)"\)/g)) {
+      if (m[1].startsWith("data:")) continue; // inline pictures, nothing to fetch
       const target = path.normalize(path.join("css", withoutQuery(m[1])));
       assert.ok(exists(target), `css/${css} uses missing file ${m[1]}`);
     }

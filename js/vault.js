@@ -201,7 +201,13 @@
   document.querySelectorAll("dialog").forEach((d) => d.addEventListener("click", (e) => { if (e.target === d) d.close(); }));
   $("newNoteBtn").addEventListener("click", () => openEdit(null));
 
+  const asked = new URLSearchParams(location.search).get("q");
+  if (asked) {
+    $("vaultSearch").value = asked;
+    filter.query = asked;
+  }
   render();
   const wanted = decodeURIComponent(location.hash.slice(1));
-  if (wanted && notes.some((n) => n.id === wanted)) openView(wanted);
+  if (wanted === "new") openEdit(null);
+  else if (wanted && notes.some((n) => n.id === wanted)) openView(wanted);
 })();

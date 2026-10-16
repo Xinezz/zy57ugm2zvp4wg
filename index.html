@@ -35,6 +35,7 @@
     <div>
       <h1 id="greeting">Mission Control</h1>
       <p class="page-sub" id="todayText"></p>
+      <p class="daily-line" id="dailyLine"></p>
     </div>
     <a class="chip primary" href="focus.html">Enter the Lock-In Room</a>
   </div>
@@ -91,6 +92,29 @@
     </div>
   </div>
 
+  <section class="card heat-card" aria-labelledby="heatHeading">
+    <h2 class="card-title" id="heatHeading">
+      <span>Consistency</span>
+      <span class="streak" id="streakBadge"></span>
+    </h2>
+    <div class="heat-layout">
+      <div class="heat-main">
+        <div class="heat-scroll" id="heatScroll">
+          <div class="heat-months" id="heatMonths" aria-hidden="true"></div>
+          <div class="heat-wrap">
+            <div class="heat-days" aria-hidden="true"><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span><span></span></div>
+            <div class="heatmap" id="heatmap" role="img" aria-label="Activity over the last 26 weeks"></div>
+          </div>
+        </div>
+        <div class="heat-foot">
+          <span class="muted" id="heatSummary"></span>
+          <span class="heat-legend" aria-hidden="true">Less <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> More</span>
+        </div>
+      </div>
+      <div class="heat-stats" id="heatStats"></div>
+    </div>
+  </section>
+
   <div class="grid grid-2">
     <section class="card" aria-labelledby="countHeading">
       <h2 class="card-title" id="countHeading"><span>Countdowns</span><button type="button" class="chip" id="countToggle" aria-expanded="false">+ Add</button></h2>
@@ -125,6 +149,7 @@
 
 <script src="js/ui-sound.js"></script>
 <script src="js/shared.js"></script>
+<script src="js/celebrate.js"></script>
 <script src="js/planner-core.js"></script>
 <script src="js/life-core.js"></script>
 <script src="js/data.js"></script>

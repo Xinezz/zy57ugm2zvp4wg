@@ -95,7 +95,10 @@ const LifeData = (() => {
     if (!fresh.length) return [];
     fresh.forEach((a) => { dates[a.id] = todayKey(); });
     save("achievementDates", dates);
-    if (announce && typeof showToast === "function") {
+    if (announce && typeof Celebrate !== "undefined") {
+      fresh.slice(0, 3).forEach((a) => Celebrate.achievement(a.title, a.description, icon(a.icon)));
+      if (fresh.length > 3 && typeof showToast === "function") showToast(`…and ${fresh.length - 3} more achievements unlocked!`);
+    } else if (announce && typeof showToast === "function") {
       showToast(fresh.length === 1 ? `Achievement unlocked: ${fresh[0].title}!` : `${fresh.length} achievements unlocked!`);
     }
     if (typeof UiSound !== "undefined") UiSound.play("check");

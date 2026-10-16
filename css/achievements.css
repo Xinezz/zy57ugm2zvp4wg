@@ -159,3 +159,17 @@ button.ach:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+/* personal bests: long values wrap underneath instead of crushing the title */
+#bestList .list-item {
+  flex-wrap: wrap;
+}
+
+#bestList .grow {
+  flex: 1 1 170px;
+}
+
+.best-value {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

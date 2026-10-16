@@ -223,6 +223,17 @@ const UPDATE_SEEDS = [
     glyph: "XP",
     bg: "linear-gradient(135deg, #3a1c71, #d4af37, #0a0a0a)",
   },
+  {
+    id: "up-21-sparkle",
+    date: "2026-10-16",
+    title: "Sparkle and Speed",
+    year: "Oct 2026",
+    medium: "Polish and delight",
+    description: "Gold confetti for finished tasks, a level-up medal and achievement cards, a 26-week consistency heatmap with a streak flame, a daily line of encouragement, a Ctrl+K quick-actions bar, soft glowing backgrounds and smooth page transitions.",
+    link: "index.html",
+    glyph: "✨",
+    bg: "linear-gradient(135deg, #0a0a0a, #d4af37, #f2d479)",
+  },
 ];
 
 const WINGS = {

@@ -62,6 +62,14 @@
     if (window.SiteNav) SiteNav.refreshLevel();
   }
 
+  /** Confetti from a ticked box, and a bigger burst when it finishes the day's list. */
+  function celebrateTick(box, key) {
+    if (typeof Celebrate === "undefined") return;
+    const items = itemsFor(days, rules, key);
+    if (items.length > 1 && items.every((i) => i.done)) Celebrate.confetti({ count: 120 });
+    else Celebrate.burstFrom(box, 24);
+  }
+
   /* ---------- Header clock ---------- */
 
   function updateHeader() {
@@ -292,6 +300,7 @@
       checkbox.addEventListener("change", () => {
         PlannerCore.setDone(days, rules, selectedKey, item, checkbox.checked);
         saveAll();
+        if (checkbox.checked) celebrateTick(checkbox, selectedKey);
         renderTaskList();
         renderCalendar();
       });

@@ -268,6 +268,35 @@
     return out.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
   }
 
+  /* ---------- activity heatmap and streaks ---------- */
+
+  /**
+   * How busy each day was: tasks finished, minutes locked in and whether a reflection was written,
+   * squeezed into a level from 0 (nothing) to 4 (a big day) for the heatmap.
+   */
+  function activityByDay(d, keys) {
+    const tasks = doneTaskStats(d.days, d.rules).perDay;
+    const focus = {};
+    d.focusLog.forEach((s) => { focus[s.date] = (focus[s.date] || 0) + (s.minutes || 0); });
+    return keys.map((key) => {
+      const tasksDone = tasks[key] || 0;
+      const focusMinutes = focus[key] || 0;
+      const journaled = entryFilled(d.journal[key]);
+      const score = tasksDone + focusMinutes / 25 + (journaled ? 1 : 0);
+      const level = score <= 0 ? 0 : score < 2 ? 1 : score < 4 ? 2 : score < 7 ? 3 : 4;
+      return { key, tasksDone, focusMinutes, journaled, score, level };
+    });
+  }
+
+  /** Days in a row with any activity, ending today (or yesterday, if today hasn't started yet). */
+  function activeStreak(activity, todayKey) {
+    const active = new Set(activity.filter((a) => a.score > 0).map((a) => a.key));
+    let key = active.has(todayKey) ? todayKey : addDays(todayKey, -1);
+    let current = 0;
+    while (active.has(key)) { current++; key = addDays(key, -1); }
+    return { current, best: longestRun([...active].sort()), activeDays: active.size };
+  }
+
   /* ---------- XP ---------- */
 
   const totalForLevel = (level) => 50 * level * (level - 1);
@@ -424,6 +453,7 @@
     entryFilled, journalKeys, journalStreak, longestRun, weeklyRecap,
     focusOn, weeklySummary, countedSessions,
     projectProgress, upcoming,
+    activityByDay, activeStreak,
     levelFor, totalForLevel, computeXp, achievements, personalBests,
     searchVault, timelineEvents, snapshot, snapshotIsEmpty,
   };

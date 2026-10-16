@@ -199,4 +199,6 @@
   document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => $(b.dataset.close).close()));
 
   render();
+  if (location.hash === "#skill") openSkill(null);
+  if (location.hash === "#badge") openBadge(null);
 })();

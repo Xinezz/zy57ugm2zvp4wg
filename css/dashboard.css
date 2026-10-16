@@ -287,3 +287,297 @@
     flex: 1;
   }
 }
+
+/* "Coming up": one row per day with a tear-off calendar tile */
+#upcomingList {
+  gap: 8px;
+}
+
+.up-day {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  list-style: none;
+}
+
+.up-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  flex-shrink: 0;
+  padding: 3px 0 4px;
+  border: 2px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  border-top: 7px solid var(--gold-dim);
+  border-radius: 6px 6px 8px 8px;
+  background: var(--field-bg);
+  line-height: 1.05;
+  font-size: 0.75rem;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+}
+
+.up-tile strong {
+  font-weight: 400;
+  font-size: 1.5rem;
+  color: var(--gold-light);
+}
+
+.up-day.has-deadline .up-tile {
+  border-top-color: var(--busy);
+}
+
+.up-body {
+  flex: 1;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.up-when {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--gold-dim);
+}
+
+.up-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin-top: 2px;
+}
+
+.up-chip {
+  padding: 1px 9px;
+  border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
+  border-radius: 999px;
+  color: var(--cream);
+  font-size: 0.95rem;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+a.up-chip:hover,
+a.up-chip:focus-visible {
+  border-color: var(--gold-light);
+  color: var(--gold-light);
+}
+
+.up-chip.up-deadline,
+.up-chip.up-milestone {
+  border-color: var(--busy);
+  background: color-mix(in srgb, var(--busy) 22%, transparent);
+}
+
+.up-chip.up-countdown {
+  border-color: var(--done);
+  background: color-mix(in srgb, var(--done) 18%, transparent);
+}
+
+.up-chip.up-more {
+  border-style: dashed;
+  color: var(--gold-dim);
+}
+
+/* one encouraging line under the date */
+.daily-line {
+  margin: 4px 0 0;
+  color: var(--cream);
+  font-size: 1.05rem;
+  opacity: 0.85;
+}
+
+.daily-line::before {
+  content: "\201C";
+  margin-right: 3px;
+  color: var(--gold);
+}
+
+.daily-line::after {
+  content: "\201D";
+  margin-left: 2px;
+  color: var(--gold);
+}
+
+/* ---------- consistency heatmap ---------- */
+.heat-card {
+  margin-bottom: 16px;
+}
+
+.streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  color: var(--gold-dim);
+}
+
+.streak .badge-icon {
+  width: 30px;
+  height: 30px;
+  border-width: 2px;
+  box-shadow: none;
+}
+
+.streak .badge-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.streak strong {
+  font-weight: 400;
+  font-size: 1.5rem;
+  color: var(--gold-light);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .streak.is-hot .badge-icon {
+    animation: flame-flicker 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes flame-flicker {
+  0%, 100% { box-shadow: 0 0 6px color-mix(in srgb, var(--gold) 50%, transparent); transform: scale(1); }
+  50% { box-shadow: 0 0 16px #ff9a3c; transform: scale(1.06) rotate(-3deg); }
+}
+
+.heat-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px 24px;
+}
+
+.heat-main {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.heat-scroll {
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+/* fixed-size squares, like a contributions graph: 26 weeks across, Monday to Sunday down */
+.heat-months {
+  display: grid;
+  grid-template-columns: repeat(26, 15px);
+  gap: 4px;
+  margin-left: 34px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  color: var(--gold-dim);
+}
+
+.heat-wrap {
+  display: flex;
+  gap: 6px;
+}
+
+.heat-days {
+  display: grid;
+  grid-template-rows: repeat(7, 15px);
+  gap: 4px;
+  width: 28px;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--gold-dim);
+}
+
+.heat-days span {
+  display: flex;
+  align-items: center;
+}
+
+.heatmap {
+  display: grid;
+  grid-template-rows: repeat(7, 15px);
+  grid-auto-flow: column;
+  grid-auto-columns: 15px;
+  gap: 4px;
+}
+
+.heat {
+  border-radius: 3px;
+  background: #1d1810;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+@media (hover: hover) {
+  .heat:not(.lx):hover {
+    outline: 2px solid var(--cream);
+    outline-offset: 1px;
+  }
+}
+
+.heat.l1 { background: color-mix(in srgb, var(--gold) 28%, #1d1810); }
+.heat.l2 { background: color-mix(in srgb, var(--gold) 52%, #1d1810); }
+.heat.l3 { background: color-mix(in srgb, var(--gold) 78%, #1d1810); }
+.heat.l4 { background: var(--gold-light); box-shadow: 0 0 6px color-mix(in srgb, var(--gold) 60%, transparent); }
+.heat.lx { background: transparent; border-style: dashed; opacity: 0.4; }
+
+.heat.is-today {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 1px;
+}
+
+.heat-stats {
+  flex: 1 1 220px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.heat-stat {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border: 2px solid color-mix(in srgb, var(--gold) 30%, transparent);
+  border-radius: var(--wobble-sm);
+  background: var(--field-bg);
+}
+
+.heat-stat strong {
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: var(--gold-light);
+}
+
+.heat-stat span {
+  color: var(--gold-dim);
+  font-size: 0.9rem;
+}
+
+.heat-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+.heat-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--gold-dim);
+}
+
+.heat-legend i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: #1d1810;
+}
+
+.heat-legend i.l1 { background: color-mix(in srgb, var(--gold) 28%, #1d1810); }
+.heat-legend i.l2 { background: color-mix(in srgb, var(--gold) 52%, #1d1810); }
+.heat-legend i.l3 { background: color-mix(in srgb, var(--gold) 78%, #1d1810); }
+.heat-legend i.l4 { background: var(--gold-light); }

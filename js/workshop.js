@@ -42,6 +42,7 @@
     if (project.status === status) return;
     project.status = status;
     project.completedAt = status === "done" ? LifeData.nowIso() : null;
+    if (status === "done" && typeof Celebrate !== "undefined") Celebrate.confetti({ count: 150 });
     project.logs.unshift({ id: LifeData.uid("l"), date: today, text: `Moved to ${STATUS_LABELS[status]}` });
   }
 
@@ -359,5 +360,6 @@
   LifeData.checkAchievements({ announce: false });
 
   const wanted = decodeURIComponent(location.hash.slice(1));
-  if (wanted && find(wanted)) openEditor(wanted);
+  if (wanted === "new") $("newProjectBtn").click();
+  else if (wanted && find(wanted)) openEditor(wanted);
 })();
