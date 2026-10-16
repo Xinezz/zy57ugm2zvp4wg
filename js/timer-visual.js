@@ -237,6 +237,68 @@
   window.addEventListener("scroll", queueLight, { passive: true });
   window.addEventListener("resize", queueLight);
 
+  /* ---------- lights off: nothing on screen but the timer (and the candle), until switched back ---------- */
+
+  let wakeLock = null;
+  let wentFullscreen = false;
+  let cursorTimer = null;
+  const lightsAreOff = () => document.body.classList.contains("lights-off");
+
+  async function keepAwake() {
+    try {
+      if ("wakeLock" in navigator && !wakeLock) {
+        wakeLock = await navigator.wakeLock.request("screen");
+        wakeLock.addEventListener("release", () => { wakeLock = null; });
+      }
+    } catch {}
+  }
+
+  function hideCursorSoon() {
+    document.body.classList.remove("cursor-hidden");
+    clearTimeout(cursorTimer);
+    if (lightsAreOff()) cursorTimer = setTimeout(() => document.body.classList.add("cursor-hidden"), 2500);
+  }
+
+  async function lightsOff() {
+    if (lightsAreOff()) return;
+    document.body.classList.add("lights-off");
+    window.scrollTo({ top: 0 });
+    keepAwake();
+    hideCursorSoon();
+    const hint = $("lightsHint");
+    hint.classList.add("is-shown");
+    setTimeout(() => hint.classList.remove("is-shown"), 3500);
+    try {
+      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        await document.documentElement.requestFullscreen({ navigationUI: "hide" });
+        wentFullscreen = true;
+      }
+    } catch {}
+    queueLight();
+  }
+
+  function lightsOn() {
+    if (!lightsAreOff()) return;
+    document.body.classList.remove("lights-off", "cursor-hidden");
+    clearTimeout(cursorTimer);
+    if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+    if (wentFullscreen && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+    wentFullscreen = false;
+    queueLight();
+  }
+
+  $("lightsOffBtn").addEventListener("click", lightsOff);
+  $("lightsOnBtn").addEventListener("click", lightsOn);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && lightsAreOff() && !document.querySelector("dialog[open]")) lightsOn();
+  });
+  // leaving fullscreen (Esc in most browsers) turns the lights back on too
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement && wentFullscreen) { wentFullscreen = false; lightsOn(); }
+  });
+  document.addEventListener("mousemove", () => { if (lightsAreOff()) hideCursorSoon(); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && lightsAreOff()) keepAwake(); });
+
   function draw() {
     visual.innerHTML = SVG[style];
     stage.dataset.style = style;

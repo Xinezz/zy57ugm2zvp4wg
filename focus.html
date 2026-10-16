@@ -82,6 +82,7 @@
     <div class="room-row">
       <span class="room-playing" id="roomPlaying"></span>
       <button type="button" class="chip room-btn" id="roomBtn" title="Hide everything but the timer and the scene">&#x26F6; Room view</button>
+      <button type="button" class="chip lights-btn" id="lightsOffBtn" title="Hide everything except the timer, until you turn the lights back on">&#127761; Lights off</button>
     </div>
   </section>
 
@@ -249,6 +250,9 @@
   <div class="sp-connect" id="spConnectRow" hidden><button type="button" class="big-btn" id="spConnect">Connect Spotify</button></div>
   <button type="button" class="sp-link" id="spDisconnect" hidden>Disconnect Spotify</button>
 </section>
+
+<button type="button" class="lights-on-btn" id="lightsOnBtn" aria-label="Turn the lights back on" title="Turn the lights back on">&#128161;</button>
+<div class="lights-hint" id="lightsHint" aria-hidden="true">Tap &#128161; (or press Esc) to turn the lights back on</div>
 
 <script src="js/ui-sound.js"></script>
 <script src="js/shared.js"></script>

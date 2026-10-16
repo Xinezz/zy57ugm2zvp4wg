@@ -1557,3 +1557,157 @@ body.room-view.has-tabbar {
 .timer-stage[data-style="candle"][data-phase="rest"] .tv-svg {
   filter: drop-shadow(0 0 18px rgba(95, 208, 216, 0.35));
 }
+
+/* ==========================================================
+   Lights off: only the timer and its candle (or ring, hourglass, tree)
+   ========================================================== */
+body.lights-off {
+  background: #000;
+}
+
+body.lights-off::before,
+body.lights-off::after {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+body.lights-off.cursor-hidden,
+body.lights-off.cursor-hidden * {
+  cursor: none !important;
+}
+
+body.lights-off .site-nav,
+body.lights-off .sub-nav,
+body.lights-off .tabbar,
+body.lights-off .focus-top,
+body.lights-off .lockin-grid,
+body.lights-off .soundscape,
+body.lights-off .settings-panel,
+body.lights-off .reports,
+body.lights-off .bg-controls,
+body.lights-off .spotify-toggle,
+body.lights-off .spotify-player:not(.in-pip),
+body.lights-off .toast,
+body.lights-off .timer-panel > :not(.timer-stage):not(.progress),
+body.lights-off .timer-ends {
+  display: none !important;
+}
+
+/* the scene video fades out (its sound keeps playing) */
+body.lights-off .scene-layer {
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+body.lights-off .focus-app {
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 0 16px;
+}
+
+body.lights-off.has-tabbar {
+  padding-bottom: 0;
+}
+
+body.lights-off .timer-panel {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  animation: none !important;
+}
+
+/* a touch bigger, since it's all there is */
+body.lights-off .timer-stage[data-style="ring"] {
+  width: min(460px, 86vw, 80dvh);
+}
+
+body.lights-off .timer-stage:is([data-style="hourglass"], [data-style="candle"], [data-style="tree"]) .timer-visual {
+  width: clamp(130px, 26vw, 220px);
+  height: clamp(220px, 46vh, 360px);
+}
+
+/* the candle's darkness reaches all the way to black */
+body.lights-off .candle-dark {
+  background: radial-gradient(circle var(--candle-r) at calc(var(--cx) + 10vw) calc(var(--cy) + 10vh),
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.18) 22%,
+    rgba(0, 0, 0, 0.8) 58%,
+    #000 88%);
+}
+
+/* the way back: a faint light switch in the corner */
+.lights-on-btn {
+  display: none;
+  position: fixed;
+  right: calc(18px + env(safe-area-inset-right, 0px));
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  z-index: 95;
+  width: 46px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 50%;
+  background: transparent;
+  font-size: 1.3rem;
+  opacity: 0.22;
+  cursor: pointer;
+  transition: opacity 0.3s, box-shadow 0.3s;
+}
+
+body.lights-off .lights-on-btn {
+  display: flex;
+}
+
+.lights-on-btn:hover,
+.lights-on-btn:focus-visible {
+  opacity: 1;
+  box-shadow: 0 0 18px rgba(255, 200, 90, 0.5);
+}
+
+body.lights-off.cursor-hidden .lights-on-btn:not(:focus-visible) {
+  opacity: 0.12;
+}
+
+.lights-hint {
+  position: fixed;
+  left: 50%;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  z-index: 95;
+  max-width: 90vw;
+  color: var(--gold-dim);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 1s ease;
+}
+
+body.lights-off .lights-hint.is-shown {
+  opacity: 0.85;
+}
+
+/* lights off on a phone: the candle (or hourglass, tree) above, big digits below */
+@media (max-width: 520px) {
+  body.lights-off .timer-stage:is([data-style="hourglass"], [data-style="candle"], [data-style="tree"]) {
+    flex-direction: column;
+  }
+
+  body.lights-off .timer-stage:is([data-style="hourglass"], [data-style="candle"], [data-style="tree"]) .time-display {
+    font-size: clamp(4rem, 22vw, 6rem);
+  }
+}
+
+/* in the dark the time still needs to be readable, so it glows softly above the shadow */
+body.lights-off .timer-readout {
+  position: relative;
+  z-index: 60;
+  opacity: 0.9;
+}
+
+body.lights-off .timer-stage:not(.is-running) .time-display {
+  text-shadow: 0 0 18px rgba(255, 190, 90, 0.35);
+}
