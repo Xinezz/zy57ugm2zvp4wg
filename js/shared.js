@@ -42,7 +42,31 @@ const Store = {
 };
 
 /** Shrinks an image file and resolves with a JPEG data URL. */
+/* GIFs are kept exactly as they are so they stay animated (shrinking one through a canvas would
+   freeze it on its first frame). Browsers only keep about 5 MB per site, so big ones are refused. */
+const GIF_MAX_BYTES = 2.5 * 1024 * 1024;
+
+function readGif(file) {
+  return new Promise((resolve, reject) => {
+    if (file.size > GIF_MAX_BYTES) {
+      reject(new Error(`That GIF is ${(file.size / 1024 / 1024).toFixed(1)} MB. GIFs need to be under 2.5 MB to fit, so try a smaller or shorter one.`));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      // make sure it really is a picture before keeping it
+      const img = new Image();
+      img.onload = () => resolve(reader.result);
+      img.onerror = () => reject(new Error("That file could not be read as an image."));
+      img.src = reader.result;
+    };
+    reader.onerror = () => reject(new Error("That file could not be read as an image."));
+    reader.readAsDataURL(file);
+  });
+}
+
 function downscaleImage(file, maxSize, quality = 0.85) {
+  if (file && file.type === "image/gif") return readGif(file);
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
