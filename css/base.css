@@ -662,8 +662,7 @@ button, a {
   white-space: nowrap;
 }
 
-.site-link svg,
-.site-menu-btn svg {
+.site-link svg {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
@@ -678,20 +677,6 @@ button, a {
   border-color: var(--gold);
   background: color-mix(in srgb, var(--gold) 18%, transparent);
   color: var(--gold-light);
-}
-
-.site-menu-btn {
-  display: none;
-  align-items: center;
-  gap: 6px;
-  margin-left: auto;
-  padding: 6px 12px;
-  border: 2px solid var(--gold);
-  border-radius: var(--wobble-sm);
-  background: transparent;
-  color: var(--gold-light);
-  font-size: 1rem;
-  cursor: pointer;
 }
 
 .site-level {
@@ -732,36 +717,127 @@ button, a {
   }
 }
 
-@media (max-width: 900px) {
-  .site-nav {
-    flex-wrap: wrap;
-  }
+/* ---------- sub-tabs on the "Me" pages ---------- */
+.sub-nav {
+  position: sticky;
+  top: var(--nav-h, 52px);
+  z-index: 55;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  background: rgba(10, 9, 6, 0.72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
 
-  .site-menu-btn {
-    display: flex;
-  }
+.sub-nav::-webkit-scrollbar {
+  display: none;
+}
 
-  .site-level {
-    order: 2;
-  }
+.sub-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 3px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--gold-dim);
+  font-size: 0.98rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
 
+.sub-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sub-link:hover {
+  color: var(--gold-light);
+}
+
+.sub-link[aria-current="page"] {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
+  color: var(--gold-light);
+}
+
+/* ---------- bottom tab bar (phones) ---------- */
+.tabbar {
+  display: none;
+}
+
+@media (max-width: 760px) {
   .site-links {
     display: none;
-    order: 3;
-    flex-basis: 100%;
-    flex-direction: column;
-    gap: 4px;
-    padding: 8px 0 4px;
   }
 
-  .site-nav.is-open .site-links {
+  .site-search {
+    margin-left: auto;
+  }
+
+  .sub-nav {
+    justify-content: flex-start;
+  }
+
+  body.has-tabbar {
+    --tabbar-space: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: var(--tabbar-space);
+  }
+
+  .tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 70;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    padding: 5px 6px calc(5px + env(safe-area-inset-bottom, 0px));
+    border-top: 2px solid color-mix(in srgb, var(--gold) 70%, transparent);
+    background: rgba(10, 9, 6, 0.92);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.5);
+    view-transition-name: tabbar;
+  }
+
+  .tab-link {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 4px 0 3px;
+    border-radius: 12px;
+    color: var(--gold-dim);
+    font-size: 0.82rem;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .site-link {
-    padding: 10px 12px;
-    font-size: 1.1rem;
+  .tab-link svg {
+    width: 24px;
+    height: 24px;
   }
+
+  .tab-link[aria-current="page"] {
+    background: color-mix(in srgb, var(--gold) 16%, transparent);
+    color: var(--gold-light);
+  }
+
+  /* things pinned to the bottom of the screen sit above the tab bar */
+  body.has-tabbar .toast { bottom: calc(16px + var(--tabbar-space)); }
+  body.has-tabbar .page-nav,
+  body.has-tabbar .bg-controls { bottom: calc(8px + var(--tabbar-space)); }
+  body.has-tabbar .celebrate-card { bottom: calc(16px + var(--tabbar-space)); }
+  body.has-tabbar .spotify-toggle { bottom: calc(12px + var(--tabbar-space)); }
+  body.has-tabbar .spotify-player:not(.in-pip) { bottom: calc(84px + var(--tabbar-space)); }
 }
 
 @media (hover: none) {
@@ -1082,12 +1158,6 @@ body:not(.gallery-page)::after {
   }
 }
 
-@media (max-width: 900px) {
-  .site-search {
-    order: 1;
-    margin-left: auto;
-  }
-}
 
 .cmdk {
   width: min(600px, 94vw);
@@ -1210,4 +1280,46 @@ body:not(.gallery-page)::after {
   .cmdk-hint {
     display: none;
   }
+}
+
+/* ---------- reading font ----------
+   Long text (tasks, notes, journal entries, descriptions, fields) uses a clean font so it's easy
+   to read; headings, numbers and buttons keep the handwriting. Settings > Reading font switches
+   back to handwriting everywhere. */
+:root {
+  --font-read: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Roboto, Arial, sans-serif;
+}
+
+html[data-font="clean"] :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  textarea,
+  select,
+  .list-item .grow,
+  .task-text,
+  .week-tasks li,
+  .up-chip,
+  .note-body,
+  .note-card p,
+  .snippet,
+  .tl-body p,
+  .recap-section .grow,
+  .page-sub,
+  .daily-line,
+  .empty-note,
+  .small-note,
+  .set-note,
+  .sp-artist,
+  .cmdk-label,
+  .celebrate-text span,
+  .project-card .muted,
+  .ach-text .muted,
+  .hub-card p,
+  .welcome p
+) {
+  font-family: var(--font-read);
+  letter-spacing: 0;
+}
+
+html[data-font="clean"] :is(textarea, .note-body, .list-item .grow, .task-text, .week-tasks li) {
+  font-size: 0.94em;
 }

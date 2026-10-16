@@ -5,7 +5,7 @@
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="A gold and black daily planner with a flip calendar, notes, tasks and a focus timer.">
-<title>Daily Planner</title>
+<title>Calendar</title>
 <link rel="icon" href="assets/notes-icon.gif" type="image/gif">
 <link rel="preload" href="assets/fonts/PatrickHand-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#14110a">
@@ -75,6 +75,11 @@
       </div>
     </div>
 
+    <div class="view-switch" role="group" aria-label="Calendar view">
+      <button type="button" class="chip" id="viewMonth" aria-pressed="true">Month</button>
+      <button type="button" class="chip" id="viewWeek" aria-pressed="false">Week</button>
+    </div>
+
     <div class="weekday-labels" aria-hidden="true">
       <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
     </div>
@@ -84,6 +89,16 @@
         <h2 id="monthLabel" aria-live="polite">Calendar</h2>
         <div class="calendar-grid" id="calendarGrid"></div>
       </div>
+    </div>
+
+    <div class="week-view" id="weekView" hidden>
+      <div class="week-head">
+        <button type="button" class="chip" id="prevWeekBtn" aria-label="Previous week">&#9664;</button>
+        <h2 id="weekLabel" aria-live="polite">This week</h2>
+        <button type="button" class="chip" id="nextWeekBtn" aria-label="Next week">&#9654;</button>
+        <button type="button" class="chip" id="thisWeekBtn">This week</button>
+      </div>
+      <div class="week-grid" id="weekGrid"></div>
     </div>
 
     <div class="calendar-nav-bottom">
@@ -101,7 +116,7 @@
 
     <h3>Tasks</h3>
     <div class="task-input-row">
-      <input type="text" id="taskInput" placeholder="Add a task..." aria-label="New task">
+      <input type="text" id="taskInput" placeholder="Add a task... try &quot;gym fri 6pm&quot;" aria-label="New task" autocomplete="off">
       <select id="repeatSelect" aria-label="Repeat">
         <option value="">Once</option>
         <option value="daily">Every day</option>
@@ -111,6 +126,7 @@
       </select>
       <button id="addTaskBtn" type="button" aria-label="Add task"></button>
     </div>
+    <div class="quick-hint" id="taskHint" aria-live="polite"></div>
     <ul id="taskList"></ul>
   </aside>
 
@@ -253,6 +269,7 @@
 <script src="js/life-core.js"></script>
 <script src="js/data.js"></script>
 <script src="js/nav.js"></script>
+<script src="js/reminders.js"></script>
 <script src="js/planner.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/sync-core.js"></script>

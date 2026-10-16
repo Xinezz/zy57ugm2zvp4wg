@@ -129,3 +129,20 @@ const Theme = (() => {
 
   return { PRESETS, DEFAULT, current: stored, set, reset, paletteFor };
 })();
+
+/* Reading font: "clean" (the default) uses a plain, easy-to-read font for longer text such as
+   tasks, notes and journal entries, keeping the handwriting font for headings, numbers and buttons.
+   "hand" keeps handwriting everywhere. Applied in the <head> so pages never flash. */
+const ReadingFont = (() => {
+  const KEY = "plannerReadingFont";
+  const get = () => {
+    try { return localStorage.getItem(KEY) === "hand" ? "hand" : "clean"; } catch { return "clean"; }
+  };
+  const apply = (value) => { document.documentElement.dataset.font = value; };
+  function set(value) {
+    try { localStorage.setItem(KEY, value === "hand" ? "hand" : "clean"); } catch {}
+    apply(get());
+  }
+  apply(get());
+  return { get, set };
+})();

@@ -27,6 +27,7 @@ const pages = {
   "workshop.html": ["js/workshop.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
   "journal.html": ["js/journal.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
   "vault.html": ["js/vault.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
+  "me.html": ["js/me.js", "js/reminders.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
   "achievements.html": ["js/achievements.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
   "timeline.html": ["js/timeline.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
   "museum.html": ["js/museum.js", "js/shared.js", "js/theme.js", "js/nav.js", "js/sync.js"],
@@ -59,6 +60,7 @@ test("scripts only look up element ids that exist in their page", () => {
     ["focus.html", "js/lockin.js"], ["workshop.html", "js/workshop.js"], ["journal.html", "js/journal.js"],
     ["vault.html", "js/vault.js"], ["achievements.html", "js/achievements.js"], ["timeline.html", "js/timeline.js"],
     ["museum.html", "js/museum.js"],
+    ["me.html", "js/me.js"],
   ];
   for (const [page, script] of checks) {
     const ids = new Set([...read(page).matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));

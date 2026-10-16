@@ -234,6 +234,17 @@ const UPDATE_SEEDS = [
     glyph: "✨",
     bg: "linear-gradient(135deg, #0a0a0a, #d4af37, #f2d479)",
   },
+  {
+    id: "up-22-five-tabs",
+    date: "2026-10-17",
+    title: "Five Tabs",
+    year: "Oct 2026",
+    medium: "Simpler and smarter",
+    description: "The site was rearranged into five tabs (Today, Calendar, Focus, Projects, Me) with a tab bar on phones, a welcome tour for new visitors, quick add that understands \u201cfri 3pm\u201d and \u201cevery monday\u201d, task times, a week view, reminders, a Me hub with settings and sign-in, and a clean reading font.",
+    link: "me.html",
+    glyph: "5",
+    bg: "linear-gradient(135deg, #14110a, #d4af37, #c2188f)",
+  },
 ];
 
 const WINGS = {

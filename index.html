@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Mission Control</title>
+<title>Today</title>
 <link rel="icon" href="assets/notes-icon.gif" type="image/gif">
 <link rel="preload" href="assets/fonts/PatrickHand-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#14110a">
@@ -40,6 +40,12 @@
     <a class="chip primary" href="focus.html">Enter the Lock-In Room</a>
   </div>
 
+  <div class="sync-nudge" id="syncNudge" hidden>
+    <span>&#9729;&#65039; Your planner only lives in this browser. Sign in to back it up and use it on your phone too.</span>
+    <a class="chip primary" href="me.html#account">Sign in</a>
+    <button type="button" class="icon-btn" id="syncNudgeClose" aria-label="Hide this message">&#10005;</button>
+  </div>
+
   <a class="live-countdown" id="liveCountdown" href="planner.html#internship" hidden>
     <span class="live-label" id="liveLabel">Internship ends in</span>
     <span class="live-units" aria-live="off">
@@ -54,7 +60,7 @@
 
   <div class="dash-top">
     <section class="card today-card" aria-labelledby="todayHeading">
-      <h2 class="card-title" id="todayHeading"><span>Today's tasks</span><a class="card-link" href="planner.html">Open planner &rarr;</a></h2>
+      <h2 class="card-title" id="todayHeading"><span>Today's tasks</span><a class="card-link" href="planner.html">Calendar &rarr;</a></h2>
       <div class="today-body">
         <div class="ring" id="ring">
           <svg viewBox="0 0 160 160" aria-hidden="true">
@@ -66,9 +72,14 @@
         <div class="today-tasks">
           <ul class="list" id="taskList"></ul>
           <div class="form-row quick-add">
-            <input type="text" class="field" id="quickTask" maxlength="200" placeholder="Add a task for today" aria-label="New task for today">
+            <input type="text" class="field" id="quickTask" maxlength="200" placeholder="Add a task... try &quot;call mom tmr 7pm&quot;" aria-label="New task" autocomplete="off">
             <button type="button" class="chip" id="quickAdd">Add</button>
           </div>
+          <div class="quick-hint" id="quickHint" aria-live="polite"></div>
+          <details class="today-notes" id="todayNotesBox">
+            <summary>Notes for today</summary>
+            <textarea class="field" id="todayNotes" maxlength="4000" placeholder="Anything to remember today..."></textarea>
+          </details>
         </div>
       </div>
     </section>
@@ -154,7 +165,9 @@
 <script src="js/life-core.js"></script>
 <script src="js/data.js"></script>
 <script src="js/nav.js"></script>
+<script src="js/reminders.js"></script>
 <script src="js/dashboard.js"></script>
+<script src="js/welcome.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/sync-core.js"></script>
 <script src="js/sync.js"></script>

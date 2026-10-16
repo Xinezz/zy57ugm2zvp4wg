@@ -201,7 +201,97 @@
       if (again) again.focus();
     }
     applyCalendarBg();
+    if (calView === "week") renderWeek();
   }
+
+  /* ---------- Week view: Monday to Sunday side by side, tasks in time order ---------- */
+
+  const VIEW_KEY = "calendarView"; // this device only
+  let calView = location.hash === "#week" ? "week" : (() => { try { return localStorage.getItem(VIEW_KEY) || "month"; } catch { return "month"; } })();
+  const mondayOf = (key) => PlannerCore.addDays(key, -((PlannerCore.weekdayOf(key) + 6) % 7));
+  let weekOf = mondayOf(todayKey());
+
+  function renderWeek() {
+    const today = todayKey();
+    const end = PlannerCore.addDays(weekOf, 6);
+    const fmt = (key, options) => {
+      const { y, m, d } = parseKey(key);
+      return new Date(y, m - 1, d).toLocaleDateString(undefined, options);
+    };
+    $("weekLabel").textContent = `${fmt(weekOf, { day: "numeric", month: "short" })} \u2013 ${fmt(end, { day: "numeric", month: "short", year: "numeric" })}`;
+
+    const grid = $("weekGrid");
+    grid.replaceChildren();
+    for (let i = 0; i < 7; i++) {
+      const key = PlannerCore.addDays(weekOf, i);
+      const items = PlannerCore.byTime(itemsFor(days, rules, key));
+      const status = dayStatus(items);
+      const period = periodFor(key, periods);
+
+      const col = document.createElement("button");
+      col.type = "button";
+      col.className = `week-day${key === today ? " today" : ""}${key === selectedKey ? " selected" : ""}`;
+      col.dataset.key = key;
+      col.setAttribute("aria-label", `${longDate(key)}, ${items.length ? `${items.length} task${items.length > 1 ? "s" : ""}` : "no tasks"}`);
+
+      const head = document.createElement("div");
+      head.className = `week-day-head ${status || (isWeekendKey(key) ? "weekend" : period ? period.className : "weekday")}`;
+      const name = document.createElement("span");
+      name.textContent = fmt(key, { weekday: "short" });
+      const num = document.createElement("strong");
+      num.textContent = parseKey(key).d;
+      head.append(name, num);
+      col.appendChild(head);
+
+      const list = document.createElement("ul");
+      list.className = "week-tasks";
+      items.forEach((item) => {
+        const li = document.createElement("li");
+        if (item.done) li.className = "done";
+        if (item.time) {
+          const at = document.createElement("span");
+          at.className = "task-time";
+          at.textContent = PlannerCore.formatTime(item.time);
+          li.appendChild(at);
+        }
+        li.appendChild(document.createTextNode(item.text));
+        list.appendChild(li);
+      });
+      if (!items.length) {
+        const li = document.createElement("li");
+        li.className = "week-empty";
+        li.textContent = "Free";
+        list.appendChild(li);
+      }
+      col.appendChild(list);
+      col.addEventListener("click", () => selectDay(key));
+      grid.appendChild(col);
+    }
+  }
+
+  function setView(next) {
+    calView = next;
+    try { localStorage.setItem(VIEW_KEY, next); } catch {}
+    const week = next === "week";
+    $("viewMonth").setAttribute("aria-pressed", String(!week));
+    $("viewWeek").setAttribute("aria-pressed", String(week));
+    $("weekView").hidden = !week;
+    document.querySelector(".flip-container").hidden = week;
+    document.querySelector(".weekday-labels").hidden = week;
+    ["prevMonth", "nextMonth", "todayBtn"].forEach((id) => { $(id).hidden = week; });
+    if (week) {
+      if (selectedKey) weekOf = mondayOf(selectedKey);
+      renderWeek();
+    } else if (selectedKey) {
+      goToDate(selectedKey);
+    }
+  }
+
+  $("viewMonth").addEventListener("click", () => setView("month"));
+  $("viewWeek").addEventListener("click", () => setView("week"));
+  $("prevWeekBtn").addEventListener("click", () => { weekOf = PlannerCore.addDays(weekOf, -7); renderWeek(); });
+  $("nextWeekBtn").addEventListener("click", () => { weekOf = PlannerCore.addDays(weekOf, 7); renderWeek(); });
+  $("thisWeekBtn").addEventListener("click", () => { weekOf = mondayOf(todayKey()); selectDay(todayKey()); renderWeek(); });
 
   $("calendarGrid").addEventListener("keydown", (event) => {
     const steps = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
@@ -289,7 +379,7 @@
     list.replaceChildren();
     if (!selectedKey) return;
 
-    itemsFor(days, rules, selectedKey).forEach((item) => {
+    PlannerCore.byTime(itemsFor(days, rules, selectedKey)).forEach((item) => {
       const li = document.createElement("li");
       if (item.done) li.classList.add("done");
 
@@ -309,7 +399,14 @@
       text.className = "task-text";
       text.textContent = item.text;
 
-      li.append(checkbox, text);
+      li.append(checkbox);
+      if (item.time) {
+        const at = document.createElement("span");
+        at.className = "task-time";
+        at.textContent = PlannerCore.formatTime(item.time);
+        li.append(at);
+      }
+      li.append(text);
 
       const remove = document.createElement("button");
       remove.type = "button";
@@ -353,17 +450,34 @@
     });
   }
 
+  /** Reads any date, time or repeat typed into the task box ("gym fri 6pm", "pay rent monthly"). */
+  function parseTaskInput() {
+    const parsed = PlannerCore.parseQuickAdd($("taskInput").value, todayKey());
+    return { parsed, key: parsed.date || selectedKey, repeat: parsed.repeat || $("repeatSelect").value };
+  }
+
   function addTask() {
     if (!selectedKey) return;
     const input = $("taskInput");
-    const repeat = $("repeatSelect").value;
-    if (!PlannerCore.addTask(days, rules, selectedKey, input.value, repeat)) return;
+    const { parsed, key, repeat } = parseTaskInput();
+    if (!PlannerCore.addTask(days, rules, key, parsed.text, repeat, parsed.time)) return;
     input.value = "";
     $("repeatSelect").value = "";
+    $("taskHint").textContent = "";
     saveAll();
+    if (key !== selectedKey) showToast(`Added to ${shortDate(key)}${parsed.time ? ` at ${PlannerCore.formatTime(parsed.time)}` : ""}.`);
     renderTaskList();
     renderCalendar();
   }
+
+  $("taskInput").addEventListener("input", () => {
+    const { parsed, key, repeat } = parseTaskInput();
+    const bits = [];
+    if (key !== selectedKey) bits.push(shortDate(key));
+    if (parsed.time) bits.push(PlannerCore.formatTime(parsed.time));
+    if (parsed.repeat) bits.push(`repeats ${REPEAT_LABELS[repeat]}`);
+    $("taskHint").textContent = bits.length && parsed.text ? `\u2192 ${bits.join(" \u00b7 ")}` : "";
+  });
 
   $("addTaskBtn").addEventListener("click", addTask);
   $("taskInput").addEventListener("keydown", (event) => {
@@ -958,6 +1072,8 @@
   updateHeader();
   setInterval(updateHeader, 1000);
   if (location.hash === "#internship") openPeriodSettings();
+  if (location.hash === "#settings") openSettings();
+  if (calView === "week") setView("week");
   applyNotesBg();
   selectDay(todayKey());
 })();

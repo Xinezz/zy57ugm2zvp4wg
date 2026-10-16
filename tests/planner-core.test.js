@@ -171,7 +171,7 @@ test("special periods colour weekdays only and count weekdays left", () => {
 });
 
 test("saved internship dates are validated and the end moment is exact", () => {
-  assert.equal(core.cleanPeriods(null)[0].end, core.PERIODS[0].end); // nothing saved: defaults
+  assert.deepEqual(core.cleanPeriods(null), []); // nothing saved: no countdown
   assert.deepEqual(core.cleanPeriods([]), []); // removed on purpose
   const cleaned = core.cleanPeriods([
     { label: "Intern", start: "2026-11-02", end: "2027-01-29", finish: "17:30" },
@@ -186,6 +186,43 @@ test("saved internship dates are validated and the end moment is exact", () => {
   assert.deepEqual([end.year, end.month, end.day, end.hours, end.minutes], [2027, 1, 19, 18, 0]);
   assert.deepEqual(core.splitDuration(((2 * 24 + 3) * 3600 + 4 * 60 + 5) * 1000), { days: 2, hours: 3, minutes: 4, seconds: 5 });
   assert.deepEqual(core.splitDuration(-5000), { days: 0, hours: 0, minutes: 0, seconds: 0 });
+});
+
+test("quick add reads dates, times and repeats out of the text", () => {
+  const T = "2026-10-17"; // a Saturday
+  const q = (s) => {
+    const r = core.parseQuickAdd(s, T);
+    return [r.text, r.date, r.time, r.repeat];
+  };
+  assert.deepEqual(q("Submit report fri 3pm"), ["Submit report", "2026-10-23", "15:00", null]);
+  assert.deepEqual(q("call mom tmr"), ["call mom", "2026-10-18", null, null]);
+  assert.deepEqual(q("gym every monday"), ["gym", "2026-10-19", null, "weekly"]);
+  assert.deepEqual(q("standup every weekday 10:00"), ["standup", null, "10:00", "weekdays"]);
+  assert.deepEqual(q("Meeting 20 oct at 2"), ["Meeting", "2026-10-20", "14:00", null]);
+  assert.deepEqual(q("dentist 25/10 9:30am"), ["dentist", "2026-10-25", "09:30", null]);
+  assert.deepEqual(q("exam on dec 5th"), ["exam", "2026-12-05", null, null]);
+  assert.deepEqual(q("study in 2 weeks"), ["study", "2026-10-31", null, null]);
+  assert.deepEqual(q("lunch at noon today"), ["lunch", "2026-10-17", "12:00", null]);
+  assert.deepEqual(q("sat review"), ["review", "2026-10-17", null, null]); // today counts
+  assert.deepEqual(q("next sat review"), ["review", "2026-10-24", null, null]);
+  assert.deepEqual(q("party 5 jan"), ["party", "2027-01-05", null, null]); // already past this year
+  assert.deepEqual(q("Buy 3 resistors"), ["Buy 3 resistors", null, null, null]); // plain numbers stay
+  assert.deepEqual(q("Read Monitor manual"), ["Read Monitor manual", null, null, null]); // words containing day names stay
+  assert.equal(core.parseQuickAdd("bad 31/2", T).date, null);
+});
+
+test("tasks keep an optional time and sort by it", () => {
+  const days = {};
+  const rules = [];
+  core.addTask(days, rules, "2026-10-17", "late", null, "18:00");
+  core.addTask(days, rules, "2026-10-17", "untimed", null);
+  core.addTask(days, rules, "2026-10-17", "early", "daily", "08:15");
+  core.addTask(days, rules, "2026-10-17", "bad time", null, "25:00");
+  const items = core.itemsFor(days, rules, "2026-10-17");
+  assert.deepEqual(core.byTime(items).map((i) => i.text), ["early", "late", "untimed", "bad time"]);
+  assert.equal(items.find((i) => i.text === "bad time").time, null);
+  assert.equal(core.formatTime("15:30"), "3:30 pm");
+  assert.equal(core.formatTime("00:05"), "12:05 am");
 });
 
 test("the clock follows Singapore time whatever the device's time zone", () => {

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Me</title>
+<link rel="icon" href="assets/notes-icon.gif" type="image/gif">
+<link rel="preload" href="assets/fonts/PatrickHand-latin.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="theme-color" content="#14110a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Planner">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/life.css">
+<link rel="stylesheet" href="css/me.css">
+<script src="js/theme.js"></script>
+<script src="js/loader.js"></script>
+</head>
+<body>
+
+<div class="loader" id="loader" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <img class="loader-icon" src="assets/notes-icon.gif" alt="">
+  <div class="loader-title">Loading</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div class="loader-pct">0%</div>
+  <div class="loader-tip">Tip: everything about you lives here: reflections, notes, trophies and settings.</div>
+</div>
+<noscript><style>.loader { display: none; }</style></noscript>
+
+<main class="page">
+  <section class="card profile-card" aria-label="Your profile">
+    <div class="avatar" id="avatar" aria-hidden="true"></div>
+    <div class="profile-main">
+      <label class="name-row">
+        <span class="sr-only">Your name</span>
+        <input type="text" class="name-input" id="nameInput" maxlength="40" placeholder="Add your name" autocomplete="nickname">
+      </label>
+      <p class="profile-sub" id="profileSub"></p>
+      <div class="bar profile-bar"><span id="profileBar"></span></div>
+      <p class="muted profile-xp" id="profileXp"></p>
+    </div>
+    <div class="profile-medal" id="profileMedal" aria-hidden="true">1</div>
+  </section>
+
+  <div class="hub-grid" id="hubGrid"></div>
+
+  <h2 class="settings-heading" id="settings">Settings</h2>
+
+  <div class="settings-grid">
+    <section class="card" id="account" aria-labelledby="accountHeading">
+      <h3 class="card-title" id="accountHeading">Account &amp; sync</h3>
+      <div id="syncPanel">
+        <p class="set-note" id="syncStatus" aria-live="polite">Starting cloud sync...</p>
+
+        <div id="syncSignedOut" hidden>
+          <div class="btn-row">
+            <button type="button" class="chip primary" id="syncGoogle">Sign in with Google</button>
+          </div>
+          <p class="set-note">or use an email and password</p>
+          <div class="form-grid">
+            <input type="email" id="syncEmail" class="field" placeholder="Email" autocomplete="email" aria-label="Email">
+            <input type="password" id="syncPassword" class="field" placeholder="Password (at least 6 characters)" autocomplete="current-password" aria-label="Password">
+          </div>
+          <div class="btn-row">
+            <button type="button" class="chip" id="syncEmailIn">Sign in</button>
+            <button type="button" class="chip" id="syncEmailNew">Create account</button>
+          </div>
+        </div>
+
+        <div class="btn-row" id="syncSignedIn" hidden>
+          <button type="button" class="chip" id="syncNowBtn">Sync now</button>
+          <button type="button" class="chip" id="syncOutBtn">Sign out</button>
+        </div>
+
+        <div id="syncChoose" hidden>
+          <p class="set-note">This device and your cloud copy both have data. Which one should every device use? The other one is replaced.
+            <strong>If this is a new device, pick the cloud copy.</strong></p>
+          <div class="btn-row">
+            <button type="button" class="chip primary" id="syncUseCloud">Use the cloud copy</button>
+            <button type="button" class="chip" id="syncUseDevice">Use this device's data</button>
+          </div>
+        </div>
+      </div>
+      <p class="set-note">Your data stays in your own browser and your own private cloud space. Nobody else can see it.</p>
+    </section>
+
+    <section class="card" id="reminders" aria-labelledby="remindersHeading">
+      <h3 class="card-title" id="remindersHeading">Reminders</h3>
+      <p class="set-note" id="notifyStatus"></p>
+      <div class="btn-row">
+        <button type="button" class="chip primary" id="notifyOn">Turn on reminders</button>
+        <button type="button" class="chip" id="notifyTest" hidden>Send a test</button>
+      </div>
+      <div class="reminder-opts" id="reminderOpts">
+        <label class="check-row"><input type="checkbox" id="remTasks"> <span>When a task with a time is due</span></label>
+        <label class="check-row"><input type="checkbox" id="remMorningOn"> <span>Morning summary at</span>
+          <input type="time" class="field time-field" id="remMorning" aria-label="Morning summary time"></label>
+        <label class="check-row"><input type="checkbox" id="remEveningOn"> <span>"Time to reflect" at</span>
+          <input type="time" class="field time-field" id="remEvening" aria-label="Evening reminder time"></label>
+        <label class="check-row"><input type="checkbox" id="remFocus"> <span>When the focus timer ends</span></label>
+      </div>
+      <p class="set-note">Reminders arrive while the site is open in a tab (minimised is fine). Install it on your phone's home screen for the best results.</p>
+    </section>
+
+    <section class="card" aria-labelledby="lookHeading">
+      <h3 class="card-title" id="lookHeading">Look &amp; feel</h3>
+      <p class="set-note">Reading font for tasks, notes and journal entries:</p>
+      <div class="btn-row" role="radiogroup" aria-label="Reading font">
+        <button type="button" class="chip font-choice" data-font="clean" role="radio">Clean <span class="font-sample clean">Aa</span></button>
+        <button type="button" class="chip font-choice" data-font="hand" role="radio">Handwritten <span class="font-sample hand">Aa</span></button>
+      </div>
+      <p class="set-note">Outline colour, backgrounds and sounds are in the Calendar's settings.</p>
+      <div class="btn-row">
+        <a class="chip" href="planner.html#settings">Calendar settings</a>
+        <a class="chip" href="planner.html#internship">Countdown dates</a>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="dataHeading">
+      <h3 class="card-title" id="dataHeading">Your data</h3>
+      <p class="set-note">Save everything to one file, or restore from one.</p>
+      <div class="btn-row">
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <button type="button" class="chip" id="exportBtn">Export backup</button>
+        <button type="button" class="chip" id="importBtn">Import backup</button>
+      </div>
+      <p class="set-note" id="backupStatus" aria-live="polite"></p>
+      <div class="btn-row">
+        <a class="chip" href="index.html#welcome">Replay the welcome tour</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="js/ui-sound.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/celebrate.js"></script>
+<script src="js/planner-core.js"></script>
+<script src="js/life-core.js"></script>
+<script src="js/data.js"></script>
+<script src="js/museum-data.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/reminders.js"></script>
+<script src="js/me.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/sync-core.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

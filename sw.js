@@ -2,12 +2,13 @@
    Strategy: always try the network first (so updates show up), and fall back to the saved copy when offline.
    Bump CACHE_NAME when the list of files below changes. */
 
-const CACHE_NAME = "daily-planner-v13";
+const CACHE_NAME = "daily-planner-v14";
 
 const FILES = [
   "./",
   "index.html",
   "planner.html",
+  "me.html",
   "focus.html",
   "workshop.html",
   "journal.html",
@@ -22,6 +23,7 @@ const FILES = [
   "css/focus.css",
   "css/museum.css",
   "css/life.css",
+  "css/me.css",
   "css/dashboard.css",
   "css/workshop.css",
   "css/journal.css",
@@ -32,6 +34,9 @@ const FILES = [
   "js/loader.js",
   "js/shared.js",
   "js/celebrate.js",
+  "js/reminders.js",
+  "js/welcome.js",
+  "js/me.js",
   "js/planner-core.js",
   "js/planner.js",
   "js/focus.js",
@@ -104,5 +109,18 @@ self.addEventListener("fetch", (event) => {
       .catch(() =>
         caches.match(request, { ignoreSearch: true }).then((cached) => cached || caches.match("index.html"))
       )
+  );
+});
+
+// Tapping a reminder opens (or focuses) the page it points to.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL((event.notification.data && event.notification.data.url) || "index.html", self.registration.scope).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+      const open = windows.find((w) => w.url === url) || windows[0];
+      if (open) return open.focus().then((w) => (w && w.url !== url && "navigate" in w ? w.navigate(url) : w));
+      return self.clients.openWindow(url);
+    })
   );
 });

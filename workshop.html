@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Project Workshop</title>
+<title>Projects</title>
 <link rel="icon" href="assets/notes-icon.gif" type="image/gif">
 <link rel="preload" href="assets/fonts/PatrickHand-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#14110a">
@@ -36,7 +36,10 @@
       <h1>Project Workshop</h1>
       <p class="page-sub">Projects still being built. When one is finished, publish it to the museum in one click.</p>
     </div>
-    <button type="button" class="big-btn" id="newProjectBtn">New project</button>
+    <div class="btn-row head-actions">
+      <a class="chip" href="museum.html?wing=projects" title="Finished projects you've published, framed in the museum">Showcase</a>
+      <button type="button" class="big-btn" id="newProjectBtn">New project</button>
+    </div>
   </div>
 
   <div class="kanban" id="board" aria-label="Project board"></div>
@@ -129,6 +132,7 @@
 <script src="js/life-core.js"></script>
 <script src="js/data.js"></script>
 <script src="js/nav.js"></script>
+<script src="js/reminders.js"></script>
 <script src="js/workshop.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/sync-core.js"></script>

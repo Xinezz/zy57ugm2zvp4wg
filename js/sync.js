@@ -338,7 +338,7 @@ const CloudSync = (() => {
   return api;
 })();
 
-/* ---------- Settings panel (planner page only) ---------- */
+/* ---------- Account panel (the Me page and the Calendar's settings) ---------- */
 (() => {
   if (typeof document === "undefined") return;
   const panel = document.getElementById("syncPanel");

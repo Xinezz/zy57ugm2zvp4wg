@@ -101,11 +101,11 @@
     const items = [];
     const entry = days[key];
     (entry && entry.tasks ? entry.tasks : []).forEach((t, index) => {
-      items.push({ kind: "day", index, text: t.text, done: !!t.done });
+      items.push({ kind: "day", index, text: t.text, done: !!t.done, time: t.time || null });
     });
     rules.forEach((rule) => {
       if (occursOn(rule, key)) {
-        items.push({ kind: "rule", ruleId: rule.id, text: rule.text, done: !!(rule.done && rule.done[key]), repeat: rule.freq });
+        items.push({ kind: "rule", ruleId: rule.id, text: rule.text, done: !!(rule.done && rule.done[key]), repeat: rule.freq, time: rule.time || null });
       }
     });
     return items;

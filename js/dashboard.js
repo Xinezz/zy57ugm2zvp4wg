@@ -44,7 +44,8 @@
 
   function greet() {
     const hour = PlannerCore.sgNow().hours;
-    $("greeting").textContent = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
+    const name = (LifeData.profile().name || "").trim();
+    $("greeting").textContent = `${hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening"}${name ? `, ${name}` : ""}`;
     $("todayText").textContent = LifeData.prettyDate(today, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
     const dayNumber = LifeCore.daysBetween("2026-01-01", today);
     $("dailyLine").textContent = DAILY_LINES[((dayNumber % DAILY_LINES.length) + DAILY_LINES.length) % DAILY_LINES.length];
@@ -53,7 +54,7 @@
   /* ---------- today ---------- */
 
   function renderToday(d) {
-    const items = LifeCore.tasksOn(d.days, d.rules, today);
+    const items = PlannerCore.byTime(LifeCore.tasksOn(d.days, d.rules, today));
     const p = LifeCore.dailyProgress(items);
     $("ringFill").style.strokeDasharray = RING;
     $("ringFill").style.strokeDashoffset = RING * (1 - p.ratio);
@@ -64,10 +65,30 @@
     $("taskList").replaceChildren(...(items.length ? items.map((item) =>
       h("li", { class: `list-item${item.done ? " is-done" : ""}` },
         h("input", { type: "checkbox", checked: item.done, "aria-label": `Done: ${item.text}`, onchange: (e) => toggle(item, e.target.checked, e.target) }),
+        item.time ? h("span", { class: "task-time" }, PlannerCore.formatTime(item.time)) : null,
         h("span", { class: "grow" }, item.text),
         item.repeat ? h("span", { class: "tag" }, "repeats") : null))
-      : [h("li", { class: "empty-note" }, "A clear day. Add something below or plan ahead in the planner.")]));
+      : [h("li", { class: "empty-note" }, "A clear day. Add something below, like \"read chapter 3 at 8pm\".")]));
+
+    // notes for today (the same notes as the Calendar's)
+    const notes = (d.days[today] && d.days[today].notes) || "";
+    if (document.activeElement !== $("todayNotes")) $("todayNotes").value = notes;
+    if (notes && !$("todayNotesBox").dataset.touched) $("todayNotesBox").open = true;
   }
+
+  let notesTimer = null;
+  $("todayNotes").addEventListener("input", (e) => {
+    clearTimeout(notesTimer);
+    const value = e.target.value;
+    notesTimer = setTimeout(() => {
+      const days = LifeData.load("days");
+      days[today] = days[today] || { notes: "", tasks: [] };
+      days[today].notes = value;
+      if (!value && !(days[today].tasks || []).length) delete days[today];
+      LifeData.save("days", days);
+    }, 400);
+  });
+  $("todayNotesBox").addEventListener("toggle", (e) => { e.currentTarget.dataset.touched = "1"; });
 
   function toggle(item, done, box) {
     const days = LifeData.load("days");
@@ -87,16 +108,22 @@
   }
 
   function quickAdd() {
-    const text = $("quickTask").value.trim();
-    if (!text) return;
-    const days = LifeData.load("days");
-    days[today] = days[today] || { notes: "", tasks: [] };
-    days[today].tasks = days[today].tasks || [];
-    days[today].tasks.push({ text, done: false });
-    LifeData.save("days", days);
+    const result = LifeData.quickAdd($("quickTask").value);
+    if (!result) return;
     $("quickTask").value = "";
+    $("quickHint").textContent = "";
+    if (result.date !== today || result.parsed.repeat) showToast(`Added "${result.parsed.text}" \u2014 ${LifeData.describeWhen(result)}`);
     render();
   }
+
+  // live preview of what the quick-add box understood
+  $("quickTask").addEventListener("input", () => {
+    const raw = $("quickTask").value;
+    const preview = LifeData.previewQuickAdd(raw);
+    $("quickHint").textContent = raw.trim() && preview.parsed.found.length && preview.parsed.text
+      ? `\u2192 "${preview.parsed.text}" \u00b7 ${LifeData.describeWhen(preview)}`
+      : "";
+  });
 
   $("quickAdd").addEventListener("click", quickAdd);
   $("quickTask").addEventListener("keydown", (e) => { if (e.key === "Enter") quickAdd(); });
@@ -336,6 +363,26 @@
     renderWeek(d);
     if (window.SiteNav) SiteNav.refreshLevel();
   }
+
+  /* ---------- a gentle nudge to sign in, once there's something worth backing up ---------- */
+
+  const NUDGE_KEY = "syncNudgeHidden"; // this device only
+  function syncNudge(state) {
+    let hidden = false;
+    try { hidden = localStorage.getItem(NUDGE_KEY) === "1"; } catch {}
+    const d = LifeData.all();
+    const hasData = Object.keys(d.days).length > 2 || d.projects.length || d.vault.length || Object.keys(d.journal).length;
+    $("syncNudge").hidden = hidden || !hasData || state.status !== "signedout";
+  }
+  $("syncNudgeClose").addEventListener("click", () => {
+    try { localStorage.setItem(NUDGE_KEY, "1"); } catch {}
+    $("syncNudge").hidden = true;
+  });
+  if (typeof CloudSync !== "undefined") CloudSync.onChange(syncNudge);
+  else window.addEventListener("load", () => { if (typeof CloudSync !== "undefined") CloudSync.onChange(syncNudge); });
+
+  // the welcome tour calls this after saving your name, countdown and first task
+  window.TodayPage = { refresh: () => { greet(); render(); tickLive(); } };
 
   greet();
   tickLive();

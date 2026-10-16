@@ -902,3 +902,149 @@
 #syncStatus.is-error {
   color: #ff8a8a;
 }
+
+/* ---------- Month / Week switch and the week view ---------- */
+.view-switch {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.view-switch .chip[aria-pressed="true"] {
+  background: var(--gold);
+  color: #0a0a0a;
+}
+
+.week-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.week-head h2 {
+  margin: 0 6px;
+  font-weight: 400;
+  font-size: 1.5rem;
+  color: var(--gold-light);
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.week-day {
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, var(--gold) 40%, transparent);
+  border-radius: 10px 4px 12px 4px;
+  background: rgba(10, 10, 10, 0.6);
+  color: var(--cream);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.week-day:hover,
+.week-day:focus-visible {
+  border-color: var(--gold-light);
+}
+
+.week-day.selected {
+  border-color: var(--gold-light);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--gold) 45%, transparent);
+}
+
+.week-day.today .week-day-head strong {
+  text-decoration: underline;
+}
+
+.week-day-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: var(--weekday);
+  color: var(--cream);
+}
+
+.week-day-head.weekend { background: var(--weekend); }
+.week-day-head.intern { background: var(--intern); }
+.week-day-head.busy { background: var(--busy); }
+.week-day-head.done { background: var(--done); color: #0a0a0a; }
+
+.week-day-head strong {
+  font-weight: 400;
+  font-size: 1.4rem;
+}
+
+.week-tasks {
+  margin: 0;
+  padding: 6px 8px 8px;
+  list-style: none;
+  font-size: 0.95rem;
+}
+
+.week-tasks li {
+  padding: 3px 0;
+  border-bottom: 1px dashed color-mix(in srgb, var(--gold) 20%, transparent);
+  overflow-wrap: anywhere;
+}
+
+.week-tasks li.done {
+  color: var(--gold-dim);
+  text-decoration: line-through;
+}
+
+.week-tasks .week-empty {
+  border: none;
+  color: var(--gold-dim);
+  font-style: italic;
+}
+
+.task-time {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gold) 22%, transparent);
+  color: var(--gold-light);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.quick-hint {
+  min-height: 1.2em;
+  margin: 4px 2px 6px;
+  color: var(--gold);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 800px) {
+  .week-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .week-day {
+    min-height: 0;
+    flex-direction: row;
+  }
+
+  .week-day-head {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 64px;
+    flex-shrink: 0;
+  }
+
+  .week-tasks {
+    flex: 1;
+  }
+}

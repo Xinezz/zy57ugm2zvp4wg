@@ -217,6 +217,7 @@
     stopTicker();
     running = false;
     chime();
+    if (typeof Reminders !== "undefined") Reminders.timerDone(phase);
     if (phase === "focus") {
       addSession();
       announceEnd(Math.round(totalMs / 60000), false);

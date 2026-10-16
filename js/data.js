@@ -20,9 +20,11 @@ const LifeData = (() => {
     distractions: "plannerDistractions",
     focusPresets: "plannerFocusPresets",
     museumProjects: "plannerProjects",
+    profile: "plannerProfile",
+    reminders: "plannerReminders",
   };
 
-  const OBJECTS = new Set(["days", "journal", "achievementDates"]);
+  const OBJECTS = new Set(["days", "journal", "achievementDates", "profile", "reminders"]);
 
   function load(name) {
     const value = Store.read(KEYS[name], null);
@@ -86,6 +88,40 @@ const LifeData = (() => {
     return span;
   }
 
+  /* ---------- quick add: "report fri 3pm" -> a task on Friday at 3pm ---------- */
+
+  /** What a typed task would become, without saving it. */
+  function previewQuickAdd(raw, defaultDate) {
+    const today = todayKey();
+    const parsed = PlannerCore.parseQuickAdd(raw, today);
+    return { parsed, date: parsed.date || defaultDate || today, today };
+  }
+
+  /** Adds a typed task (with any date, time or repeat it mentions). Returns the preview, or null. */
+  function quickAdd(raw, defaultDate) {
+    const preview = previewQuickAdd(raw, defaultDate);
+    if (!preview.parsed.text) return null;
+    const days = load("days");
+    const rules = load("rules");
+    if (!PlannerCore.addTask(days, rules, preview.date, preview.parsed.text.slice(0, 200), preview.parsed.repeat, preview.parsed.time)) return null;
+    if (!save("days", days) || !save("rules", rules)) return null;
+    return preview;
+  }
+
+  /** "Tomorrow · 3:00 pm · every Monday" */
+  function describeWhen({ parsed, date, today }) {
+    const diff = Math.round((Date.parse(date) - Date.parse(today)) / 86400000);
+    const parts = [diff === 0 ? "Today" : diff === 1 ? "Tomorrow" : prettyDate(date, { weekday: "short", day: "numeric", month: "short" })];
+    if (parsed.time) parts.push(PlannerCore.formatTime(parsed.time));
+    const weekdayName = prettyDate(date, { weekday: "long" });
+    const repeats = { daily: "every day", weekdays: "every weekday", weekly: `every ${weekdayName}`, monthly: "every month" };
+    if (parsed.repeat) parts.push(repeats[parsed.repeat]);
+    return parts.join(" · ");
+  }
+
+  /** The visitor's profile: { name, goals, onboardedAt }; empty until the welcome tour is done. */
+  const profile = () => load("profile");
+
   /** Records the first time each achievement is unlocked and announces new ones. */
   function checkAchievements({ announce = true } = {}) {
     if (typeof LifeCore === "undefined") return [];
@@ -105,5 +141,22 @@ const LifeData = (() => {
     return fresh;
   }
 
-  return { KEYS, ICONS, icon, load, save, all, todayKey, uid, nowIso, prettyDate, checkAchievements };
+  /* Someone who used the site before the welcome tour existed already has data: mark them as
+     set up (so they never see the tour) and keep the internship countdown they had by default. */
+  (function migrate() {
+    const p = load("profile");
+    if (p.onboardedAt) return;
+    const hasData = Object.keys(load("days")).length || load("rules").length || Object.keys(load("journal")).length
+      || load("projects").length || load("vault").length || load("focusLog").length;
+    if (!hasData) return;
+    if (Store.read("plannerPeriods", null) === null && typeof PlannerCore !== "undefined") {
+      Store.write("plannerPeriods", PlannerCore.PERIODS);
+    }
+    save("profile", { ...p, onboardedAt: nowIso(), migrated: true });
+  })();
+
+  return {
+    KEYS, ICONS, icon, load, save, all, todayKey, uid, nowIso, prettyDate, checkAchievements,
+    previewQuickAdd, quickAdd, describeWhen, profile,
+  };
 })();
